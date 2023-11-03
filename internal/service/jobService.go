@@ -6,21 +6,33 @@ import (
 )
 
 func (r NewService) CreateJob(ctx context.Context, nj models.NewJob, cId int) (models.Job, error) {
-	job, err := r.rs.CreateJ(ctx, nj, cId)
-	return job, err
+	jobData, err := r.rs.CreateJ(ctx, nj, cId)
+	if err != nil {
+		return models.Job{}, err
+	}
+	return jobData, err
 }
 
 func (r NewService) ViewJob() ([]models.Job, error) {
-	jobs, err := r.rs.ViewJobs()
-	return jobs, err
+	jobDetails, err := r.rs.ViewJobs()
+	if err != nil {
+		return []models.Job{}, err
+	}
+	return jobDetails, err
 }
 
 func (r NewService) GetJobInfoByID(jId int) (models.Job, error) {
-	job, err := r.rs.GetJobById(jId)
-	return job, err
+	jobData, err := r.rs.GetJobById(jId)
+	if err != nil {
+		return models.Job{}, err
+	}
+	return jobData, err
 }
 
 func (r NewService) ViewJobByCompanyId(cId int) ([]models.Job, error) {
-	jobs, err := r.rs.ViewJobById(cId)
-	return jobs, err
+	jobData, err := r.rs.ViewJobById(cId)
+	if err != nil {
+		return []models.Job{}, err
+	}
+	return jobData, err
 }

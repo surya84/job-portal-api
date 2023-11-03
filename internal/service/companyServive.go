@@ -6,16 +6,26 @@ import (
 )
 
 func (r NewService) CreateCompany(ctx context.Context, ni models.NewCompany, userId uint) (models.Company, error) {
-	c, err := r.rs.CreateC(ctx, ni, userId)
-	return c, err
+	company, err := r.rs.CreateC(ctx, ni, userId)
+	if err != nil {
+		return models.Company{}, err
+	}
+	return company, err
 }
 
 func (r NewService) ViewCompany() ([]models.Company, error) {
-	c, err := r.rs.ViewCompanies()
-	return c, err
+	companyData, err := r.rs.ViewCompanies()
+
+	if err != nil {
+		return []models.Company{}, err
+	}
+	return companyData, err
 }
 
 func (r NewService) GetCompanyInfoByID(uid int) (models.Company, error) {
-	c, err := r.rs.GetCompanyByID(uid)
-	return c, err
+	companyData, err := r.rs.GetCompanyByID(uid)
+	if err != nil {
+		return models.Company{}, err
+	}
+	return companyData, err
 }

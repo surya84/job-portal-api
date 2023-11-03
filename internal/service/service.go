@@ -23,9 +23,9 @@ type Service interface {
 
 type NewService struct {
 	Service
-	rs repository.RepoStore
+	rs repository.Repository
 }
 
-func NewServiceStore(s repository.RepoStore) NewService {
+func NewServiceStore(s repository.Repository) NewService {
 	return NewService{rs: s}
 }

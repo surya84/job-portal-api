@@ -34,6 +34,23 @@ func TestNewService_GetJobInfoByID(t *testing.T) {
 				return models.Job{}, errors.New("test error")
 			},
 		},
+		{
+			name: "success",
+			args: args{
+				jId: 12,
+			},
+			want: models.Job{
+				Title:       "software developer",
+				Description: "mobile application developemt",
+			},
+			mockRepoResponse: func() (models.Job, error) {
+				return models.Job{
+					Title:       "software developer",
+					Description: "mobile application developemt",
+				}, nil
+			},
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -42,7 +59,7 @@ func TestNewService_GetJobInfoByID(t *testing.T) {
 			mockRepo := repository.NewMockRepository(mc)
 
 			if tt.mockRepoResponse != nil {
-				mockRepo.EXPECT().ViewJobById(tt.args).Return(tt.mockRepoResponse()).AnyTimes()
+				mockRepo.EXPECT().GetJobById(tt.args.jId).Return(tt.mockRepoResponse()).AnyTimes()
 			}
 
 			s := NewServiceStore(mockRepo)
@@ -193,6 +210,81 @@ func TestNewService_CreateJob(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewService.CreateJob() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestNewService_ViewJobByCompanyId(t *testing.T) {
+	type args struct {
+		cId int
+	}
+	tests := []struct {
+		name             string
+		r                NewService
+		args             args
+		want             []models.Job
+		wantErr          bool
+		mockRepoResponse func() ([]models.Job, error)
+	}{
+		{
+			name: "error in db",
+			args: args{
+				cId: 12,
+			},
+			want: []models.Job{},
+
+			mockRepoResponse: func() ([]models.Job, error) {
+				return []models.Job{}, errors.New("error in accesing data from db")
+			},
+
+			wantErr: true,
+		},
+
+		{
+			name: "success",
+			args: args{
+				cId: 12,
+			},
+			want: []models.Job{
+				models.Job{
+					Title:       "software developer",
+					Description: "develop mobile apps",
+					CompanyID:   12,
+				},
+			},
+
+			mockRepoResponse: func() ([]models.Job, error) {
+				return []models.Job{
+					models.Job{
+						Title:       "software developer",
+						Description: "develop mobile apps",
+						CompanyID:   12,
+					},
+				}, nil
+			},
+
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			mc := gomock.NewController(t)
+
+			mockRepo := repository.NewMockRepository(mc)
+
+			if tt.mockRepoResponse != nil {
+				mockRepo.EXPECT().ViewJobById(tt.args.cId).Return(tt.mockRepoResponse()).AnyTimes()
+			}
+			s := NewServiceStore(mockRepo)
+			got, err := s.ViewJobByCompanyId(tt.args.cId)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewService.ViewJobByCompanyId() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewService.ViewJobByCompanyId() = %v, want %v", got, tt.want)
 			}
 		})
 	}

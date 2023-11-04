@@ -13,7 +13,7 @@ import (
 	models "job-portal/internal/models"
 	reflect "reflect"
 
-	v5 "github.com/golang-jwt/jwt/v5"
+	jwt "github.com/golang-jwt/jwt/v5"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -38,21 +38,6 @@ func NewMockService(ctrl *gomock.Controller) *MockService {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
-}
-
-// Authenticate mocks base method.
-func (m *MockService) Authenticate(ctx context.Context, email, password string) (v5.RegisteredClaims, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Authenticate", ctx, email, password)
-	ret0, _ := ret[0].(v5.RegisteredClaims)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Authenticate indicates an expected call of Authenticate.
-func (mr *MockServiceMockRecorder) Authenticate(ctx, email, password any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Authenticate", reflect.TypeOf((*MockService)(nil).Authenticate), ctx, email, password)
 }
 
 // CreateCompany mocks base method.
@@ -128,6 +113,21 @@ func (m *MockService) GetJobInfoByID(jId int) (models.Job, error) {
 func (mr *MockServiceMockRecorder) GetJobInfoByID(jId any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetJobInfoByID", reflect.TypeOf((*MockService)(nil).GetJobInfoByID), jId)
+}
+
+// UserSignin mocks base method.
+func (m *MockService) UserSignin(ctx context.Context, email, password string) (jwt.RegisteredClaims, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UserSignin", ctx, email, password)
+	ret0, _ := ret[0].(jwt.RegisteredClaims)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UserSignin indicates an expected call of UserSignin.
+func (mr *MockServiceMockRecorder) UserSignin(ctx, email, password any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UserSignin", reflect.TypeOf((*MockService)(nil).UserSignin), ctx, email, password)
 }
 
 // ViewCompany mocks base method.

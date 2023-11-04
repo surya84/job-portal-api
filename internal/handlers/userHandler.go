@@ -96,7 +96,7 @@ func (h *handler) UserLogin(c *gin.Context) {
 	}
 
 	// Attempt to authenticate the user with the email and password
-	claims, err := h.S.Authenticate(ctx, login.Email, login.Password)
+	claims, err := h.S.UserSignin(ctx, login.Email, login.Password)
 	if err != nil {
 		log.Error().Err(err).Str("Trace Id", traceId).Send()
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"msg": "login failed"})

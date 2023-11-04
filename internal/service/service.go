@@ -11,7 +11,7 @@ import (
 //go:generate mockgen -source=service.go -destination=service_mock.go -package=service
 type Service interface {
 	CreateUser(ctx context.Context, nu models.NewUser) (models.User, error)
-	Authenticate(ctx context.Context, email, password string) (jwt.RegisteredClaims, error)
+	UserSignin(ctx context.Context, email, password string) (jwt.RegisteredClaims, error)
 	CreateJob(ctx context.Context, nj models.NewJob, cId int) (models.Job, error)
 	ViewJob() ([]models.Job, error)
 	GetJobInfoByID(jId int) (models.Job, error)

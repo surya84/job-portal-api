@@ -72,13 +72,6 @@ func (h *handler) ViewCompany(c *gin.Context) {
 		return
 	}
 
-	// claims, ok := ctx.Value(auth.Key).(jwt.RegisteredClaims)
-	// if !ok {
-	// 	log.Error().Str("Trace Id", traceId).Msg("login first")
-	// 	c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": http.StatusText(http.StatusUnauthorized)})
-	// 	return
-	// }
-	c.JSON(http.StatusAccepted, gin.H{})
 	data, err := h.S.ViewCompany()
 
 	if err != nil {
@@ -92,22 +85,28 @@ func (h *handler) ViewCompany(c *gin.Context) {
 
 func (h *handler) GetCompanyById(c *gin.Context) {
 
+	ctx := c.Request.Context()
+	traceId, ok := ctx.Value(middleware.TraceIdKey).(string)
+	if !ok {
+		log.Error().Msg("traceId missing from context")
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": http.StatusText(http.StatusInternalServerError)})
+		return
+	}
+
 	id := c.Param("id")
 	cId, err := strconv.Atoi(id)
 	if err != nil {
-		// Handle invalid ID
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		c.JSON(http.StatusBadRequest, gin.H{"msg": http.StatusText(http.StatusBadRequest)})
 		return
 	}
 
-	// Call the service layer to get company information
 	company, err := h.S.GetCompanyInfoByID(cId)
 	if err != nil {
-		// Handle errors, e.g., company not found
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+
+		log.Error().Err(err).Str("Trace Id", traceId)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"msg": "problem in viewing Company"})
 		return
 	}
 
-	// Return the company data as JSON response
 	c.JSON(http.StatusOK, company)
 }

@@ -49,18 +49,18 @@ func TestNewService_ViewCompany(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
+			ctx := context.Background()
 			mc := gomock.NewController(t)
 
 			mockRepo := repository.NewMockRepository(mc)
 
 			if tt.mockRepoResponse != nil {
-				mockRepo.EXPECT().ViewCompanies().Return(tt.mockRepoResponse())
+				mockRepo.EXPECT().ViewCompanies(ctx).Return(tt.mockRepoResponse())
 			}
 
 			s := NewServiceStore(mockRepo)
 
-			got, err := s.ViewCompany()
+			got, err := s.ViewCompany(ctx)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewService.ViewCompany() error = %v, wantErr %v", err, tt.wantErr)
 				return

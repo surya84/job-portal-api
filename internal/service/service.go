@@ -13,11 +13,11 @@ type Service interface {
 	CreateUser(ctx context.Context, nu models.NewUser) (models.User, error)
 	UserSignin(ctx context.Context, email, password string) (jwt.RegisteredClaims, error)
 	CreateJob(ctx context.Context, nj models.NewJob, cId int) (models.Job, error)
-	ViewJob() ([]models.Job, error)
+	ViewJob(ctx context.Context) ([]models.Job, error)
 	GetJobInfoByID(jId int) (models.Job, error)
 	ViewJobByCompanyId(cId int) ([]models.Job, error)
 	CreateCompany(ctx context.Context, ni models.NewCompany, userId uint) (models.Company, error)
-	ViewCompany() ([]models.Company, error)
+	ViewCompany(ctx context.Context) ([]models.Company, error)
 	GetCompanyInfoByID(uid int) (models.Company, error)
 }
 

@@ -13,8 +13,8 @@ func (r NewService) CreateCompany(ctx context.Context, ni models.NewCompany, use
 	return company, err
 }
 
-func (r NewService) ViewCompany() ([]models.Company, error) {
-	companyData, err := r.rs.ViewCompanies()
+func (r NewService) ViewCompany(ctx context.Context) ([]models.Company, error) {
+	companyData, err := r.rs.ViewCompanies(ctx)
 
 	if err != nil {
 		return []models.Company{}, err

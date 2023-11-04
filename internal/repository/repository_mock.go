@@ -131,18 +131,18 @@ func (mr *MockRepositoryMockRecorder) GetJobById(jId any) *gomock.Call {
 }
 
 // ViewCompanies mocks base method.
-func (m *MockRepository) ViewCompanies() ([]models.Company, error) {
+func (m *MockRepository) ViewCompanies(ctx context.Context) ([]models.Company, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ViewCompanies")
+	ret := m.ctrl.Call(m, "ViewCompanies", ctx)
 	ret0, _ := ret[0].([]models.Company)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ViewCompanies indicates an expected call of ViewCompanies.
-func (mr *MockRepositoryMockRecorder) ViewCompanies() *gomock.Call {
+func (mr *MockRepositoryMockRecorder) ViewCompanies(ctx any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ViewCompanies", reflect.TypeOf((*MockRepository)(nil).ViewCompanies))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ViewCompanies", reflect.TypeOf((*MockRepository)(nil).ViewCompanies), ctx)
 }
 
 // ViewJobById mocks base method.
@@ -161,16 +161,16 @@ func (mr *MockRepositoryMockRecorder) ViewJobById(cId any) *gomock.Call {
 }
 
 // ViewJobs mocks base method.
-func (m *MockRepository) ViewJobs() ([]models.Job, error) {
+func (m *MockRepository) ViewJobs(ctx context.Context) ([]models.Job, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ViewJobs")
+	ret := m.ctrl.Call(m, "ViewJobs", ctx)
 	ret0, _ := ret[0].([]models.Job)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ViewJobs indicates an expected call of ViewJobs.
-func (mr *MockRepositoryMockRecorder) ViewJobs() *gomock.Call {
+func (mr *MockRepositoryMockRecorder) ViewJobs(ctx any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ViewJobs", reflect.TypeOf((*MockRepository)(nil).ViewJobs))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ViewJobs", reflect.TypeOf((*MockRepository)(nil).ViewJobs), ctx)
 }

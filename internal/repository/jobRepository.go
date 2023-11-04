@@ -22,7 +22,7 @@ func (s *Conn) CreateJ(ctx context.Context, nj models.NewJob, cId int) (models.J
 
 	return job, nil
 }
-func (s *Conn) ViewJobs() ([]models.Job, error) {
+func (s *Conn) ViewJobs(ctx context.Context) ([]models.Job, error) {
 	var jobs []models.Job
 
 	err := s.db.Find(&jobs).Error

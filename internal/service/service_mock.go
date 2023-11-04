@@ -131,33 +131,33 @@ func (mr *MockServiceMockRecorder) UserSignin(ctx, email, password any) *gomock.
 }
 
 // ViewCompany mocks base method.
-func (m *MockService) ViewCompany() ([]models.Company, error) {
+func (m *MockService) ViewCompany(ctx context.Context) ([]models.Company, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ViewCompany")
+	ret := m.ctrl.Call(m, "ViewCompany", ctx)
 	ret0, _ := ret[0].([]models.Company)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ViewCompany indicates an expected call of ViewCompany.
-func (mr *MockServiceMockRecorder) ViewCompany() *gomock.Call {
+func (mr *MockServiceMockRecorder) ViewCompany(ctx any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ViewCompany", reflect.TypeOf((*MockService)(nil).ViewCompany))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ViewCompany", reflect.TypeOf((*MockService)(nil).ViewCompany), ctx)
 }
 
 // ViewJob mocks base method.
-func (m *MockService) ViewJob() ([]models.Job, error) {
+func (m *MockService) ViewJob(ctx context.Context) ([]models.Job, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ViewJob")
+	ret := m.ctrl.Call(m, "ViewJob", ctx)
 	ret0, _ := ret[0].([]models.Job)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ViewJob indicates an expected call of ViewJob.
-func (mr *MockServiceMockRecorder) ViewJob() *gomock.Call {
+func (mr *MockServiceMockRecorder) ViewJob(ctx any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ViewJob", reflect.TypeOf((*MockService)(nil).ViewJob))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ViewJob", reflect.TypeOf((*MockService)(nil).ViewJob), ctx)
 }
 
 // ViewJobByCompanyId mocks base method.

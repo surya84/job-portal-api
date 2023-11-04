@@ -72,7 +72,7 @@ func (h *handler) ViewCompany(c *gin.Context) {
 		return
 	}
 
-	data, err := h.S.ViewCompany()
+	data, err := h.S.ViewCompany(ctx)
 
 	if err != nil {
 		log.Error().Err(err).Str("Trace Id", traceId)

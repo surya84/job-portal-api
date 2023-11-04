@@ -13,8 +13,8 @@ func (r NewService) CreateJob(ctx context.Context, nj models.NewJob, cId int) (m
 	return jobData, err
 }
 
-func (r NewService) ViewJob() ([]models.Job, error) {
-	jobDetails, err := r.rs.ViewJobs()
+func (r NewService) ViewJob(ctx context.Context) ([]models.Job, error) {
+	jobDetails, err := r.rs.ViewJobs(ctx)
 	if err != nil {
 		return []models.Job{}, err
 	}

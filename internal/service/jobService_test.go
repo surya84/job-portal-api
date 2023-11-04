@@ -79,6 +79,7 @@ func TestNewService_ViewJob(t *testing.T) {
 	tests := []struct {
 		name string
 		//r       NewService
+		ctx              context.Context
 		want             []models.Job
 		wantErr          bool
 		mockRepoResponse func() ([]models.Job, error)
@@ -117,13 +118,13 @@ func TestNewService_ViewJob(t *testing.T) {
 			mc := gomock.NewController(t)
 			mockRepo := repository.NewMockRepository(mc)
 			if tt.mockRepoResponse != nil {
-				mockRepo.EXPECT().ViewJobs().Return(tt.mockRepoResponse()).AnyTimes()
+				mockRepo.EXPECT().ViewJobs(gomock.Any()).Return(tt.mockRepoResponse()).AnyTimes()
 
 			}
 
 			s := NewServiceStore(mockRepo)
 
-			got, err := s.ViewJob()
+			got, err := s.ViewJob(tt.ctx)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewService.ViewJob() error = %v, wantErr %v", err, tt.wantErr)
 				return

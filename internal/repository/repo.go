@@ -21,11 +21,11 @@ type Repository interface {
 	CreateU(ctx context.Context, nu models.NewUser) (models.User, error)
 	AuthenticateUser(ctx context.Context, email, password string) (jwt.RegisteredClaims, error)
 	CreateJ(ctx context.Context, nj models.NewJob, cId int) (models.Job, error)
-	ViewJobs() ([]models.Job, error)
+	ViewJobs(ctx context.Context) ([]models.Job, error)
 	GetJobById(jId int) (models.Job, error)
 	ViewJobById(cId int) ([]models.Job, error)
 	CreateC(ctx context.Context, nc models.NewCompany, userId uint) (models.Company, error)
-	ViewCompanies() ([]models.Company, error)
+	ViewCompanies(ctx context.Context) ([]models.Company, error)
 	GetCompanyByID(uid int) (models.Company, error)
 }
 type RepoStore struct {

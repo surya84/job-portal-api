@@ -5,27 +5,26 @@ import (
 	"job-portal/internal/models"
 )
 
-func (r NewService) CreateCompany(ctx context.Context, ni models.NewCompany, userId uint) (models.Company, error) {
-	company, err := r.rs.CreateC(ctx, ni, userId)
+func (r NewService) CreateCompany(ctx context.Context, ni models.NewCompany) (models.Company, error) {
+	CompanyData, err := r.rp.CreateC(ctx, ni)
 	if err != nil {
 		return models.Company{}, err
 	}
-	return company, err
+	return CompanyData, err
 }
 
 func (r NewService) ViewCompany(ctx context.Context) ([]models.Company, error) {
-	companyData, err := r.rs.ViewCompanies(ctx)
-
+	CompanyData, err := r.rp.ViewCompanies()
 	if err != nil {
 		return []models.Company{}, err
 	}
-	return companyData, err
+	return CompanyData, err
 }
 
-func (r NewService) GetCompanyInfoByID(uid int) (models.Company, error) {
-	companyData, err := r.rs.GetCompanyByID(uid)
+func (r NewService) GetCompanyInfoByID(ctx context.Context, uid int) (models.Company, error) {
+	CompanyData, err := r.rp.GetCompanyByID(uid)
 	if err != nil {
 		return models.Company{}, err
 	}
-	return companyData, err
+	return CompanyData, err
 }

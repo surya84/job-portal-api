@@ -15,36 +15,42 @@ type Conn struct {
 	db *gorm.DB
 }
 
-//go:generate mockgen -source=repo.go -destination=repository_mock.go -package=repository
-
+//go:generate mockgen -source=repo.go -destination=repo_mock.go -package=repository
 type Repository interface {
 	CreateU(ctx context.Context, nu models.NewUser) (models.User, error)
-	AuthenticateUser(ctx context.Context, email, password string) (jwt.RegisteredClaims, error)
+	AuthenticateUser(ctx context.Context, email string, password string) (jwt.RegisteredClaims, error)
 	CreateJ(ctx context.Context, nj models.NewJob, cId int) (models.Job, error)
-	ViewJobs(ctx context.Context) ([]models.Job, error)
+	ViewJobs() ([]models.Job, error)
 	GetJobById(jId int) (models.Job, error)
 	ViewJobById(cId int) ([]models.Job, error)
-	CreateC(ctx context.Context, nc models.NewCompany, userId uint) (models.Company, error)
-	ViewCompanies(ctx context.Context) ([]models.Company, error)
+	CreateC(ctx context.Context, nc models.NewCompany) (models.Company, error)
+	ViewCompanies() ([]models.Company, error)
 	GetCompanyByID(uid int) (models.Company, error)
 }
-type RepoStore struct {
-	Repository
-}
 
-func NewRepoStore(r Repository) RepoStore {
-	return RepoStore{Repository: r}
-}
+// type RepoStore struct {
+// 	Repository
+// }
 
-// NewService is the constructor for the Conn struct.
-func NewRepo(db *gorm.DB) (*Conn, error) {
+// func NewRepoStore(r Repository) Repository {
+// 	return RepoStore{Repository: r}
+// }
 
-	// We check if the database instance is nil, which would indicate an issue.
+// // NewService is the constructor for the Conn struct.
+// func NewRepo(db *gorm.DB) (*Conn, error) {
+
+// 	// We check if the database instance is nil, which would indicate an issue.
+// 	if db == nil {
+// 		return nil, errors.New("please provide a valid connection")
+// 	}
+
+//		// We initialize our service with the passed database instance.
+//		s := &Conn{db: db}
+//		return s, nil
+//	}
+func NewRepo(db *gorm.DB) (Repository, error) {
 	if db == nil {
-		return nil, errors.New("please provide a valid connection")
+		return nil, errors.New("db cannot be nil")
 	}
-
-	// We initialize our service with the passed database instance.
-	s := &Conn{db: db}
-	return s, nil
+	return &Conn{db: db}, nil
 }

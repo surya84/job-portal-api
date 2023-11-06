@@ -8,7 +8,8 @@ import (
 	"reflect"
 	"testing"
 
-	"go.uber.org/mock/gomock"
+	"github.com/golang-jwt/jwt/v5"
+	gomock "go.uber.org/mock/gomock"
 )
 
 func TestNewService_CreateUser(t *testing.T) {
@@ -80,6 +81,86 @@ func TestNewService_CreateUser(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewService.CreateUser() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestNewService_Authenticate(t *testing.T) {
+	type args struct {
+		ctx      context.Context
+		email    string
+		password string
+	}
+	tests := []struct {
+		name string
+		//r       NewService
+		args             args
+		want             jwt.RegisteredClaims
+		wantErr          bool
+		mockRepoResponse func() (jwt.RegisteredClaims, error)
+	}{
+		{
+			name: "error in authentication",
+			args: args{
+				ctx:      context.Background(),
+				email:    "surya@gmail.com",
+				password: "1234",
+			},
+			want: jwt.RegisteredClaims{},
+			mockRepoResponse: func() (jwt.RegisteredClaims, error) {
+				return jwt.RegisteredClaims{}, errors.New("error while authenticating")
+			},
+			wantErr: true,
+		},
+		{
+			name: "success",
+			args: args{
+				ctx:      context.Background(),
+				email:    "surya@gmail.com",
+				password: "1234",
+			},
+			want: jwt.RegisteredClaims{
+				ID:        "123",
+				Issuer:    "user",
+				Subject:   "login",
+				Audience:  jwt.GetAlgorithms(),
+				ExpiresAt: &jwt.NumericDate{},
+				NotBefore: &jwt.NumericDate{},
+				IssuedAt:  &jwt.NumericDate{},
+			},
+
+			mockRepoResponse: func() (jwt.RegisteredClaims, error) {
+				return jwt.RegisteredClaims{
+					ID:        "123",
+					Issuer:    "user",
+					Subject:   "login",
+					Audience:  jwt.GetAlgorithms(),
+					ExpiresAt: &jwt.NumericDate{},
+					NotBefore: &jwt.NumericDate{},
+					IssuedAt:  &jwt.NumericDate{},
+				}, nil
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			mc := gomock.NewController(t)
+			ms := repository.NewMockRepository(mc)
+			if tt.mockRepoResponse != nil {
+				ms.EXPECT().AuthenticateUser(tt.args.ctx, tt.args.email, tt.args.password).Return(tt.mockRepoResponse()).AnyTimes()
+			}
+
+			s := NewServiceStore(ms)
+			got, err := s.Authenticate(tt.args.ctx, tt.args.email, tt.args.password)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewService.Authenticate() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewService.Authenticate() = %v, want %v", got, tt.want)
 			}
 		})
 	}

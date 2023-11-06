@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"job-portal/internal/auth"
 	"job-portal/internal/middleware"
 	"job-portal/internal/models"
 	"net/http"
@@ -10,7 +9,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/rs/zerolog/log"
 )
 
@@ -19,22 +17,14 @@ func (h *handler) CreateCompany(c *gin.Context) {
 	traceId, ok := ctx.Value(middleware.TraceIdKey).(string)
 	if !ok {
 		log.Error().Msg("traceId missing from context")
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": http.StatusText(http.StatusInternalServerError)})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": http.StatusText(http.StatusInternalServerError)})
 		return
 	}
-
-	claims, ok := ctx.Value(auth.Key).(jwt.RegisteredClaims)
-	if !ok {
-		log.Error().Str("Trace Id", traceId).Msg("login first")
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": http.StatusText(http.StatusUnauthorized)})
-		return
-	}
-
 	var newCom models.NewCompany
 	err := json.NewDecoder(c.Request.Body).Decode(&newCom)
 	if err != nil {
 		log.Error().Str("Trace Id", traceId).Msg("login first")
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": http.StatusText(http.StatusUnauthorized)})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": http.StatusText(http.StatusBadRequest)})
 		return
 	}
 	validate := validator.New()
@@ -43,20 +33,13 @@ func (h *handler) CreateCompany(c *gin.Context) {
 	if err != nil {
 		log.Error().Err(err).Str("Trace Id", traceId).Send()
 		c.AbortWithStatusJSON(http.StatusBadRequest,
-			gin.H{"msg": "please provide valid details"})
+			gin.H{"error": "Bad Request"})
 		return
 	}
-	uid, err := strconv.ParseUint(claims.Subject, 10, 64)
+	com, err := h.s.CreateCompany(ctx, newCom)
 	if err != nil {
 		log.Error().Err(err).Str("Trace Id", traceId)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": http.StatusText(http.
-			StatusInternalServerError)})
-		return
-	}
-	com, err := h.S.CreateCompany(ctx, newCom, uint(uid))
-	if err != nil {
-		log.Error().Err(err).Str("Trace Id", traceId)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "Company creation failed"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -68,15 +51,14 @@ func (h *handler) ViewCompany(c *gin.Context) {
 	traceId, ok := ctx.Value(middleware.TraceIdKey).(string)
 	if !ok {
 		log.Error().Msg("traceId missing from context")
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": http.StatusText(http.StatusInternalServerError)})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": http.StatusText(http.StatusInternalServerError)})
 		return
 	}
-
-	data, err := h.S.ViewCompany(ctx)
+	data, err := h.s.ViewCompany(ctx)
 
 	if err != nil {
 		log.Error().Err(err).Str("Trace Id", traceId)
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"msg": "problem in viewing C"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -84,29 +66,31 @@ func (h *handler) ViewCompany(c *gin.Context) {
 }
 
 func (h *handler) GetCompanyById(c *gin.Context) {
-
 	ctx := c.Request.Context()
 	traceId, ok := ctx.Value(middleware.TraceIdKey).(string)
 	if !ok {
 		log.Error().Msg("traceId missing from context")
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": http.StatusText(http.StatusInternalServerError)})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": http.StatusText(http.StatusInternalServerError)})
 		return
 	}
 
 	id := c.Param("id")
 	cId, err := strconv.Atoi(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"msg": http.StatusText(http.StatusBadRequest)})
-		return
-	}
-
-	company, err := h.S.GetCompanyInfoByID(cId)
-	if err != nil {
-
+		// Handle invalid ID
 		log.Error().Err(err).Str("Trace Id", traceId)
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"msg": "problem in viewing Company"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad Request"})
 		return
 	}
 
+	// Call the service layer to get company information
+	company, err := h.s.GetCompanyInfoByID(ctx, cId)
+	if err != nil {
+		// Handle errors, e.g., company not found
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Return the company data as JSON response
 	c.JSON(http.StatusOK, company)
 }

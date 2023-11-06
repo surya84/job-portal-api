@@ -10,7 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func API(a *auth.Auth, c repository.RepoStore) *gin.Engine {
+func API(a *auth.Auth, c repository.Repository) *gin.Engine {
 
 	r := gin.New()
 
@@ -18,7 +18,7 @@ func API(a *auth.Auth, c repository.RepoStore) *gin.Engine {
 	s := service.NewServiceStore(c)
 	h := handler{
 		a: a,
-		S: s,
+		s: s,
 	}
 
 	if err != nil {

@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"job-portal/internal/auth"
 	"job-portal/internal/middleware"
 	"job-portal/internal/models"
 	"net/http"
@@ -10,57 +9,46 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/rs/zerolog/log"
 )
 
 func (h *handler) AddJob(c *gin.Context) {
 
 	ctx := c.Request.Context()
-	traceid, ok := ctx.Value(middleware.TraceIdKey).(string)
+	traceId, ok := ctx.Value(middleware.TraceIdKey).(string)
+
 	if !ok {
-		log.Error().Msg("traceid missing from context")
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error": http.StatusText(http.StatusInternalServerError),
-		})
+		log.Error().Msg("traceId missing from context")
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": http.StatusText((http.StatusInternalServerError))})
 		return
 	}
-	_, ok = ctx.Value(auth.Key).(jwt.RegisteredClaims)
-	if !ok {
-		log.Error().Str("Trace Id", traceid).Msg("login first")
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": http.StatusText(http.StatusUnauthorized)})
-		return
-	}
-
-	//id := c.Param("cid")
-
 	cIdstr := c.Param("id")
 	cId, err := strconv.Atoi(cIdstr)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"msg": http.StatusText((http.StatusBadRequest))})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": http.StatusText((http.StatusBadRequest))})
 		return
 	}
 	var newJob models.NewJob
 	err = json.NewDecoder(c.Request.Body).Decode(&newJob)
 	if err != nil {
-		log.Error().Str("Trace Id", traceid).Msg("login first")
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": http.StatusText(http.StatusUnauthorized)})
+		log.Info().Msg("error while converting request body to json")
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": http.StatusText(http.StatusBadRequest)})
 		return
 	}
 	validate := validator.New()
 	err = validate.Struct(newJob)
 
 	if err != nil {
-		log.Error().Err(err).Str("Trace Id", traceid).Send()
+		log.Error().Err(err).Str("Trace Id", traceId).Msg("validation failed")
 		c.AbortWithStatusJSON(http.StatusBadRequest,
-			gin.H{"msg": "please provide valid details"})
+			gin.H{"error": "Bad Request"})
 		return
 	}
 
-	job, err := h.S.CreateJob(ctx, newJob, cId)
+	job, err := h.s.CreateJob(ctx, newJob, cId)
 	if err != nil {
-		log.Error().Err(err).Str("Trace Id", traceid)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "Job creation failed"})
+		log.Error().Err(err).Str("Trace Id", traceId).Msg("error while adding job")
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -74,15 +62,15 @@ func (h *handler) ViewJobs(c *gin.Context) {
 	traceId, ok := ctx.Value(middleware.TraceIdKey).(string)
 	if !ok {
 		log.Error().Msg("traceId missing from context")
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": http.StatusText(http.StatusInternalServerError)})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": http.StatusText(http.StatusInternalServerError)})
 		return
 	}
 
-	data, err := h.S.ViewJob(ctx)
+	data, err := h.s.ViewJob(ctx)
 
 	if err != nil {
 		log.Error().Err(err).Str("Trace Id", traceId)
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"msg": "problem in viewing Jobs"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -90,20 +78,28 @@ func (h *handler) ViewJobs(c *gin.Context) {
 
 }
 func (h *handler) ViewJobById(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	traceId, ok := ctx.Value(middleware.TraceIdKey).(string)
+	if !ok {
+		log.Error().Msg("traceId missing from context")
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": http.StatusText(http.StatusInternalServerError)})
+		return
+	}
 
 	id := c.Param("id")
 	jId, err := strconv.Atoi(id)
 	if err != nil {
-		// Handle invalid ID
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		log.Error().Err(err).Str("Trace Id", traceId)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad Request"})
 		return
 	}
 
 	// Call the service layer to get company information
-	job, err := h.S.GetJobInfoByID(jId)
+	job, err := h.s.GetJobInfoByID(ctx, jId)
 	if err != nil {
 		// Handle errors, e.g., company not found
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -112,34 +108,26 @@ func (h *handler) ViewJobById(c *gin.Context) {
 }
 func (h *handler) ViewJobByCompany(c *gin.Context) {
 	ctx := c.Request.Context()
-	traceid, ok := ctx.Value(middleware.TraceIdKey).(string)
-	if !ok {
-		log.Error().Msg("traceid missing from context")
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error": http.StatusText(http.StatusInternalServerError),
-		})
-		return
-	}
-	_, ok = ctx.Value(auth.Key).(jwt.RegisteredClaims)
-	if !ok {
-		log.Error().Str("Trace Id", traceid).Msg("login first")
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": http.StatusText(http.StatusUnauthorized)})
-		return
-	}
 
+	traceId, ok := ctx.Value(middleware.TraceIdKey).(string)
+	if !ok {
+		log.Error().Msg("traceId missing from context")
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": http.StatusText(http.StatusInternalServerError)})
+		return
+	}
 	id := c.Param("id")
 	cId, err := strconv.Atoi(id)
 	if err != nil {
-
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		log.Error().Err(err).Str("Trace Id", traceId)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad Request"})
 		return
 	}
 
 	// Call the service layer to get company information
-	jobs, err := h.S.ViewJobByCompanyId(cId)
+	jobs, err := h.s.ViewJobByCompanyId(ctx, cId)
 	if err != nil {
 		// Handle errors, e.g., company not found
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 

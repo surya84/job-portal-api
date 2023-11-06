@@ -6,7 +6,7 @@ import (
 	"job-portal/internal/models"
 )
 
-func (s *Conn) CreateC(ctx context.Context, nc models.NewCompany, userId uint) (models.Company, error) {
+func (s *Conn) CreateC(ctx context.Context, nc models.NewCompany) (models.Company, error) {
 
 	com := models.Company{
 		Name:     nc.Name,
@@ -24,7 +24,7 @@ func (s *Conn) CreateC(ctx context.Context, nc models.NewCompany, userId uint) (
 	return com, nil
 }
 
-func (s *Conn) ViewCompanies(ctx context.Context) ([]models.Company, error) {
+func (s *Conn) ViewCompanies() ([]models.Company, error) {
 	var com []models.Company
 	err := s.db.Find(&com).Error
 

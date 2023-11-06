@@ -8,16 +8,16 @@ import (
 )
 
 func (r NewService) CreateUser(ctx context.Context, nu models.NewUser) (models.User, error) {
-	userData, err := r.rs.CreateU(ctx, nu)
+	userDetails, err := r.rp.CreateU(ctx, nu)
 	if err != nil {
 		return models.User{}, err
 	}
-	return userData, err
+	return userDetails, err
 }
-func (r NewService) UserSignin(ctx context.Context, email, password string) (jwt.RegisteredClaims, error) {
-	AuthenticateUser, err := r.rs.AuthenticateUser(ctx, email, password)
+func (r NewService) Authenticate(ctx context.Context, email string, password string) (jwt.RegisteredClaims, error) {
+	userData, err := r.rp.AuthenticateUser(ctx, email, password)
 	if err != nil {
-		return jwt.RegisteredClaims{}, nil
+		return jwt.RegisteredClaims{}, err
 	}
-	return AuthenticateUser, err
+	return userData, err
 }

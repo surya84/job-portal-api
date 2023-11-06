@@ -79,7 +79,7 @@ func startApp() error {
 	if err != nil {
 		return err
 	}
-	repo := repository.NewRepoStore(ms)
+	//repo := repository.NewRepo(ms)
 
 	// Initialize http service
 	api := http.Server{
@@ -87,7 +87,7 @@ func startApp() error {
 		ReadTimeout:  8000 * time.Second,
 		WriteTimeout: 800 * time.Second,
 		IdleTimeout:  800 * time.Second,
-		Handler:      handlers.API(a, repo),
+		Handler:      handlers.API(a, ms),
 	}
 
 	// channel to store any errors while setting up the service

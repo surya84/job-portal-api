@@ -8,14 +8,96 @@ import (
 	"reflect"
 	"testing"
 
-	"go.uber.org/mock/gomock"
+	gomock "go.uber.org/mock/gomock"
 )
 
+func TestNewService_CreateCompany(t *testing.T) {
+	type args struct {
+		ctx context.Context
+		ni  models.NewCompany
+	}
+	tests := []struct {
+		name string
+		//r       NewService
+		args             args
+		want             models.Company
+		wantErr          bool
+		mockRepoResponse func() (models.Company, error)
+	}{
+		{
+			name: "error in creation",
+			args: args{
+				ctx: context.Background(),
+				ni: models.NewCompany{
+					Name:     "Tcs",
+					Location: "banglore",
+				},
+			},
+
+			want: models.Company{},
+			mockRepoResponse: func() (models.Company, error) {
+
+				return models.Company{}, errors.New("error in creation")
+
+			},
+			wantErr: true,
+		},
+		{
+			name: "success",
+			args: args{
+				ctx: context.Background(),
+				ni: models.NewCompany{
+					Name:     "Tcs",
+					Location: "banglore",
+				},
+			},
+			want: models.Company{
+				Name:     "Tcs",
+				Location: "banglore",
+			},
+
+			mockRepoResponse: func() (models.Company, error) {
+				return models.Company{
+					Name:     "Tcs",
+					Location: "banglore",
+				}, nil
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			mc := gomock.NewController(t)
+			mockRepo := repository.NewMockRepository(mc)
+
+			if tt.mockRepoResponse != nil {
+				mockRepo.EXPECT().CreateC(tt.args.ctx, tt.args.ni).Return(tt.mockRepoResponse()).AnyTimes()
+			}
+
+			s := NewServiceStore(mockRepo)
+
+			got, err := s.CreateCompany(tt.args.ctx, tt.args.ni)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewService.CreateCompany() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewService.CreateCompany() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestNewService_ViewCompany(t *testing.T) {
+	type args struct {
+		ctx context.Context
+	}
 	tests := []struct {
 		name string
 		//r                NewService
 		want             []models.Company
+		args             args
 		wantErr          bool
 		mockRepoResponse func() ([]models.Company, error)
 	}{
@@ -49,18 +131,18 @@ func TestNewService_ViewCompany(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ctx := context.Background()
+
 			mc := gomock.NewController(t)
 
 			mockRepo := repository.NewMockRepository(mc)
 
 			if tt.mockRepoResponse != nil {
-				mockRepo.EXPECT().ViewCompanies(ctx).Return(tt.mockRepoResponse())
+				mockRepo.EXPECT().ViewCompanies().Return(tt.mockRepoResponse())
 			}
 
 			s := NewServiceStore(mockRepo)
 
-			got, err := s.ViewCompany(ctx)
+			got, err := s.ViewCompany(tt.args.ctx)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewService.ViewCompany() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -74,6 +156,7 @@ func TestNewService_ViewCompany(t *testing.T) {
 
 func TestNewService_GetCompanyInfoByID(t *testing.T) {
 	type args struct {
+		ctx context.Context
 		uid int
 	}
 	tests := []struct {
@@ -125,71 +208,13 @@ func TestNewService_GetCompanyInfoByID(t *testing.T) {
 				mockRepo.EXPECT().GetCompanyByID(tt.args.uid).Return(tt.mockRepoResponse()).AnyTimes()
 			}
 			s := NewServiceStore(mockRepo)
-			got, err := s.GetCompanyInfoByID(tt.args.uid)
+			got, err := s.GetCompanyInfoByID(tt.args.ctx, tt.args.uid)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewService.GetCompanyInfoByID() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewService.GetCompanyInfoByID() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestNewService_CreateCompany(t *testing.T) {
-	type args struct {
-		ctx    context.Context
-		ni     models.NewCompany
-		userId uint
-	}
-	tests := []struct {
-		name string
-		//r       NewService
-		args             args
-		want             models.Company
-		wantErr          bool
-		mockRepoResponse func() (models.Company, error)
-	}{
-		{
-			name: "error in creation",
-			args: args{
-				ctx: context.Background(),
-				ni: models.NewCompany{
-					Name:     "Tcs",
-					Location: "banglore",
-				},
-				userId: 3,
-			},
-
-			want: models.Company{},
-			mockRepoResponse: func() (models.Company, error) {
-
-				return models.Company{}, errors.New("error in creation")
-
-			},
-			wantErr: true,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-
-			mc := gomock.NewController(t)
-			mockRepo := repository.NewMockRepository(mc)
-
-			if tt.mockRepoResponse != nil {
-				mockRepo.EXPECT().CreateC(tt.args.ctx, tt.args.ni, tt.args.userId).Return(tt.mockRepoResponse()).AnyTimes()
-			}
-
-			s := NewServiceStore(mockRepo)
-
-			got, err := s.CreateCompany(tt.args.ctx, tt.args.ni, tt.args.userId)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("NewService.CreateCompany() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewService.CreateCompany() = %v, want %v", got, tt.want)
 			}
 		})
 	}

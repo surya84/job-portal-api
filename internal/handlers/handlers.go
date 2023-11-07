@@ -36,7 +36,7 @@ func API(a *auth.Auth, c repository.Repository) *gin.Engine {
 	r.GET("/api/jobs", m.Authenticate(h.ViewJobs))
 	r.GET("/api/jobs/:id", m.Authenticate(h.ViewJobById))
 	r.GET("/api/companies/:id/jobs", m.Authenticate(h.ViewJobByCompany))
-	r.POST("/api/processjobapplication", h.ProcessJobApplication)
+	r.POST("/api/processjobapplication/:id", h.ProcessJobApplication)
 
 	// Return the prepared Gin engine
 	return r

@@ -65,3 +65,18 @@ func (s *Conn) ViewJobById(cId int) ([]models.Job, error) {
 
 	return jobs, nil
 }
+
+func (s *Conn) GetJobProcessData(id int) (models.Job, error) {
+
+	var jobData models.Job
+
+	tx := s.db.Where("id", id)
+
+	err := tx.Find(&jobData).Error
+
+	if err != nil {
+		return models.Job{}, err
+	}
+
+	return jobData, nil
+}

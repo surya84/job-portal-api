@@ -130,6 +130,21 @@ func (mr *MockServiceMockRecorder) GetJobInfoByID(ctx, jId any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetJobInfoByID", reflect.TypeOf((*MockService)(nil).GetJobInfoByID), ctx, jId)
 }
 
+// ProcessJob mocks base method.
+func (m *MockService) ProcessJob(ctx context.Context, id int, nj models.NewJob) (models.NewJob, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ProcessJob", ctx, id, nj)
+	ret0, _ := ret[0].(models.NewJob)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ProcessJob indicates an expected call of ProcessJob.
+func (mr *MockServiceMockRecorder) ProcessJob(ctx, id, nj any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ProcessJob", reflect.TypeOf((*MockService)(nil).ProcessJob), ctx, id, nj)
+}
+
 // ViewCompany mocks base method.
 func (m *MockService) ViewCompany(ctx context.Context) ([]models.Company, error) {
 	m.ctrl.T.Helper()

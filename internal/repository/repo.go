@@ -26,6 +26,8 @@ type Repository interface {
 	CreateC(ctx context.Context, nc models.NewCompany) (models.Company, error)
 	ViewCompanies() ([]models.Company, error)
 	GetCompanyByID(uid int) (models.Company, error)
+
+	GetJobProcessData(id int) (models.Job, error)
 }
 
 // type RepoStore struct {

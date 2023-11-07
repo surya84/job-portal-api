@@ -130,6 +130,21 @@ func (mr *MockRepositoryMockRecorder) GetJobById(jId any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetJobById", reflect.TypeOf((*MockRepository)(nil).GetJobById), jId)
 }
 
+// GetJobProcessData mocks base method.
+func (m *MockRepository) GetJobProcessData(id int) (models.Job, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetJobProcessData", id)
+	ret0, _ := ret[0].(models.Job)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetJobProcessData indicates an expected call of GetJobProcessData.
+func (mr *MockRepositoryMockRecorder) GetJobProcessData(id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetJobProcessData", reflect.TypeOf((*MockRepository)(nil).GetJobProcessData), id)
+}
+
 // ViewCompanies mocks base method.
 func (m *MockRepository) ViewCompanies() ([]models.Company, error) {
 	m.ctrl.T.Helper()

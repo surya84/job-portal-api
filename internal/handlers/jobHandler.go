@@ -136,7 +136,7 @@ func (h *handler) ViewJobByCompany(c *gin.Context) {
 }
 
 func (h *handler) ProcessJobApplication(c *gin.Context) {
-	//ctx := c.Request.Context()
+	ctx := c.Request.Context()
 
 	var newJob models.NewJob
 	err := json.NewDecoder(c.Request.Body).Decode(&newJob)
@@ -155,5 +155,21 @@ func (h *handler) ProcessJobApplication(c *gin.Context) {
 		return
 	}
 
-	//jobData, err := h.s.ProcessJob(ctx)
+	id := c.Param("id")
+	uid, err := strconv.Atoi(id)
+	if err != nil {
+		log.Info().Msg("Error while converting to int")
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": http.StatusText(http.StatusInternalServerError)})
+		return
+	}
+
+	jobData, err := h.s.ProcessJob(ctx, uid, newJob)
+
+	if err != nil {
+		log.Error().Err(err).Msg("No data Found")
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"msg": http.StatusText(http.StatusInternalServerError)})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, jobData)
 }

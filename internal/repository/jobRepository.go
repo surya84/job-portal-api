@@ -9,9 +9,20 @@ import (
 func (s *Conn) CreateJ(ctx context.Context, nj models.NewJob, cId int) (models.Job, error) {
 
 	job := models.Job{
-		Title:       nj.Title,
-		Description: nj.Description,
-		CompanyID:   uint(cId),
+		Title:              nj.Title,
+		Description:        nj.Description,
+		CompanyID:          uint(cId),
+		Min_NoticePeriod:   nj.Min_NoticePeriod,
+		Max_NoticePeriod:   nj.Max_NoticePeriod,
+		Budget:             nj.Budget,
+		Minimum_Experience: nj.Minimum_Experience,
+		Maximum_Experience: nj.Maximum_Experience,
+		Qualifications:     nj.Qualification,
+		Shifts:             nj.Shift,
+		JobTypes:           nj.Job_Type,
+		JobLocations:       nj.JobLocations,
+		Technology_stack:   nj.Technology_stack,
+		WorkMode:           nj.WorkMode,
 	}
 
 	tx := s.db.WithContext(ctx).Create(&job)

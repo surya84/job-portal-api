@@ -10,7 +10,7 @@ func (r NewService) CreateCompany(ctx context.Context, ni models.NewCompany) (mo
 	if err != nil {
 		return models.Company{}, err
 	}
-	return CompanyData, err
+	return CompanyData, nil
 }
 
 func (r NewService) ViewCompany(ctx context.Context) ([]models.Company, error) {
@@ -18,7 +18,7 @@ func (r NewService) ViewCompany(ctx context.Context) ([]models.Company, error) {
 	if err != nil {
 		return []models.Company{}, err
 	}
-	return CompanyData, err
+	return CompanyData, nil
 }
 
 func (r NewService) GetCompanyInfoByID(ctx context.Context, uid int) (models.Company, error) {
@@ -26,5 +26,5 @@ func (r NewService) GetCompanyInfoByID(ctx context.Context, uid int) (models.Com
 	if err != nil {
 		return models.Company{}, err
 	}
-	return CompanyData, err
+	return CompanyData, nil
 }

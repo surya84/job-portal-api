@@ -114,15 +114,16 @@ func TestNewService_ViewJob(t *testing.T) {
 		{
 			name: "success",
 			want: []models.Job{
-				models.Job{
+				{
 					Title:       "software developer",
 					Description: "develop mobile applications",
 					CompanyID:   24,
 				},
 			},
+
 			mockRepoResponse: func() ([]models.Job, error) {
 				return []models.Job{
-					models.Job{
+					{
 						Title:       "software developer",
 						Description: "develop mobile applications",
 						CompanyID:   24,

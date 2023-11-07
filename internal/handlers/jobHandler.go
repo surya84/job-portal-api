@@ -134,3 +134,26 @@ func (h *handler) ViewJobByCompany(c *gin.Context) {
 	// Return the company data as JSON response
 	c.JSON(http.StatusOK, jobs)
 }
+
+func (h *handler) ProcessJobApplication(c *gin.Context) {
+	//ctx := c.Request.Context()
+
+	var newJob models.NewJob
+	err := json.NewDecoder(c.Request.Body).Decode(&newJob)
+	if err != nil {
+		log.Info().Msg("error while converting request body to json")
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": http.StatusText(http.StatusInternalServerError)})
+		return
+	}
+	validate := validator.New()
+	err = validate.Struct(newJob)
+
+	if err != nil {
+		log.Error().Err(err).Msg("validation failed")
+		c.AbortWithStatusJSON(http.StatusBadRequest,
+			gin.H{"msg": http.StatusText(http.StatusBadRequest)})
+		return
+	}
+
+	//jobData, err := h.s.ProcessJob(ctx)
+}

@@ -11,6 +11,7 @@ require (
 )
 
 require (
+	github.com/lib/pq v1.10.9 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 )

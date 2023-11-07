@@ -91,7 +91,7 @@ func (h *handler) UserLogin(c *gin.Context) {
 	err = validate.Struct(login)
 	if err != nil {
 		log.Error().Err(err).Str("Trace Id", traceId).Send()
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Bad Request"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": http.StatusText(http.StatusBadRequest)})
 		return
 	}
 

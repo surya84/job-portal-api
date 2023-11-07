@@ -13,6 +13,7 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 	"go.uber.org/mock/gomock"
 	"gopkg.in/go-playground/assert.v1"
 )
@@ -184,27 +185,27 @@ func Test_handler_UserLogin(t *testing.T) {
 			expectedStatusCode: http.StatusBadRequest,
 			expectedResponse:   `{"error":"Bad Request"}`,
 		},
-		// {
-		// 	name: "error while athenticating user",
-		// 	setup: func() (*gin.Context, *httptest.ResponseRecorder, service.Service) {
-		// 		rr := httptest.NewRecorder()
-		// 		c, _ := gin.CreateTestContext(rr)
-		// 		requestBody := []byte(`{"email":"surya@gmail.com", "password":"1234"}`)
-		// 		httpReq, _ := http.NewRequest(http.MethodGet, "http://google.com:8080", bytes.NewBuffer(requestBody))
-		// 		ctx := httpReq.Context()
-		// 		ctx = context.WithValue(ctx, middleware.TraceIdKey, "693")
-		// 		httpReq = httpReq.WithContext(ctx)
-		// 		c.Request = httpReq
+		{
+			name: "error while athenticating user",
+			setup: func() (*gin.Context, *httptest.ResponseRecorder, service.Service) {
+				rr := httptest.NewRecorder()
+				c, _ := gin.CreateTestContext(rr)
+				requestBody := []byte(`{"email":"surya@gmail.com", "password":"1234"}`)
+				httpReq, _ := http.NewRequest(http.MethodGet, "http://google.com:8080", bytes.NewBuffer(requestBody))
+				ctx := httpReq.Context()
+				ctx = context.WithValue(ctx, middleware.TraceIdKey, "693")
+				httpReq = httpReq.WithContext(ctx)
+				c.Request = httpReq
 
-		// 		mc := gomock.NewController(t)
-		// 		ms := service.NewMockService(mc)
-		// 		ms.EXPECT().Authenticate(c.Request.Context(), gomock.Any(), gomock.Any()).Return(jwt.RegisteredClaims{}, errors.New("")).AnyTimes()
+				mc := gomock.NewController(t)
+				ms := service.NewMockService(mc)
+				ms.EXPECT().Authenticate(c.Request.Context(), gomock.Any(), gomock.Any()).Return(jwt.RegisteredClaims{}, errors.New("")).AnyTimes()
 
-		// 		return c, rr, nil
-		// 	},
-		// 	expectedStatusCode: http.StatusInternalServerError,
-		// 	expectedResponse:   `{"error":"user signup failed"}`,
-		// },
+				return c, rr, nil
+			},
+			expectedStatusCode: http.StatusInternalServerError,
+			expectedResponse:   `{"error":"user signup failed"}`,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

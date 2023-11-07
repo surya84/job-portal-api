@@ -1,0 +1,12 @@
+Min-NP
+Max-NP
+Budget
+JobLocations []
+Technology Stack[]
+WorkMode - [Remote,OnSite, Hybrid]
+Description
+MinExp
+MaxMax
+Qualification-[]
+Shift - [day, night, rotational]
+JobType - [full time, part time]

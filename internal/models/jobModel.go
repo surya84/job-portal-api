@@ -27,32 +27,32 @@ type Job struct {
 
 type Qualification struct {
 	gorm.Model
-	Name string `gorm:"unique"`
+	Name string
 }
 
 type Shift struct {
 	gorm.Model
-	Name string `gorm:"unique"`
+	Name string
 }
 
 type JobType struct {
 	gorm.Model
-	Name string `gorm:"unique"`
+	Name string
 }
 
 type JobLocation struct {
 	gorm.Model
-	Name string `gorm:"unique"`
+	Name string
 }
 
 type Technology struct {
 	gorm.Model
-	Name string `gorm:"unique"`
+	Name string
 }
 
 type WorkMode struct {
 	gorm.Model
-	Name string `gorm:"unique"`
+	Name string
 }
 
 type NewJob struct {

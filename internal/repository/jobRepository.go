@@ -36,7 +36,7 @@ func (s *Conn) CreateJ(ctx context.Context, nj models.NewJob, cId int) (models.J
 func (s *Conn) ViewJobs() ([]models.Job, error) {
 	var jobs []models.Job
 
-	err := s.db.Find(&jobs).Error
+	err := s.db.Preload("JobLocations").Find(&jobs).Error
 
 	if err != nil {
 		return []models.Job{}, err

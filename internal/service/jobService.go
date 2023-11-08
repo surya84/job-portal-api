@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"job-portal/internal/models"
 )
 
@@ -37,7 +38,7 @@ func (r NewService) ViewJobByCompanyId(ctx context.Context, cId int) ([]models.J
 	return jobDetails, err
 }
 
-func (r NewService) ProcessJob(ctx context.Context, id int, nj models.ApplicationRequest) (*[]models.ApplicationRequest, error) {
+func (r NewService) ProcessJob(ctx context.Context, id int, nj []models.ApplicationRequest) (*[]models.ApplicationRequest, error) {
 
 	jobDetails, err := r.rp.GetJobProcessData(id)
 
@@ -48,10 +49,14 @@ func (r NewService) ProcessJob(ctx context.Context, id int, nj models.Applicatio
 	}
 	jobs := []models.ApplicationRequest{}
 
-	if areFieldsMatching(&nj, &jobDetails) {
+	//wg := new(sync.WaitGroup)
 
-		jobs = append(jobs, nj)
+	for _, val := range nj {
+		if areFieldsMatching(&val, &jobDetails) {
 
+			jobs = append(jobs, val)
+
+		}
 	}
 
 	// If fields do not match, return an error
@@ -66,40 +71,99 @@ func areFieldsMatching(request *models.ApplicationRequest, job *models.Job) bool
 		request.Budget == job.Budget &&
 		request.Description == job.Description &&
 		request.Minimum_Experience == job.Minimum_Experience &&
-		request.Maximum_Experience == job.Maximum_Experience
-	//areQualificationsMatching(request, job)
-	//check(request.Qualification, job.Qualifications)
-	//check2()
+		request.Maximum_Experience == job.Maximum_Experience &&
+		areQualificationsMatching(request.Qualifications, job.Qualifications) &&
+		areLocationsEqual(request.Locations, job.Locations) &&
+		areJobTypesEqual(request.JobTypes, job.JobTypes) &&
+		areWorkModesEqual(request.WorkModes, job.WorkModes) &&
+		areShiftsEqual(request.Locations, job.Shifts) &&
+		areTechnologiesEqual(request.Technologies, job.Technologies)
 
 }
 
-// func areQualificationsMatching(request *models.Application, jobs *models.Job) bool {
+func areLocationsEqual(requestLocations []uint, location []models.Location) bool {
+	var q []uint
+	var dataQ []uint
+	q = append(q, requestLocations...)
+	//fmt.Println(q)
 
-// 	var q []uint
-// 	var dataQ []uint
+	for _, val := range location {
 
-// 	for _, v := range request.Qualification {
-// 		q = append(q, v)
-// 	}
-// 	fmt.Println(q)
+		dataQ = append(dataQ, uint(val.ID))
+	}
+	//fmt.Println(dataQ)
+	return areSlicesEqual(q, dataQ)
+}
 
-// 	for _, val := range jobs.Qualifications {
+func areJobTypesEqual(requesTypes []uint, JobTypes []models.JobType) bool {
 
-// 		fmt.Print(val.ID)
+	var q []uint
+	var dataQ []uint
+	q = append(q, requesTypes...)
+	fmt.Println(q)
 
-// 		dataQ = append(dataQ, uint(val.ID))
-// 	}
-// 	fmt.Println(dataQ)
+	for _, val := range JobTypes {
 
-// 	//equal := reflect.DeepEqual(q, dataQ)
+		dataQ = append(dataQ, uint(val.ID))
+	}
+	return areSlicesEqual(q, dataQ)
+}
 
-// 	if areSlicesEqual(q, dataQ) {
-// 		return true
-// 	}
+func areShiftsEqual(requestShifts []uint, jobShifts []models.Shift) bool {
 
-// 	return false
+	var q []uint
+	var dataQ []uint
 
-// }
+	q = append(q, requestShifts...)
+
+	for _, val := range jobShifts {
+
+		dataQ = append(dataQ, uint(val.ID))
+	}
+	return areSlicesEqual(q, dataQ)
+}
+
+func areTechnologiesEqual(requesttech []uint, jobtech []models.Technology) bool {
+
+	var q []uint
+	var dataQ []uint
+
+	q = append(q, requesttech...)
+
+	for _, val := range jobtech {
+
+		dataQ = append(dataQ, uint(val.ID))
+	}
+	return areSlicesEqual(q, dataQ)
+}
+
+func areWorkModesEqual(requestModes []uint, jobModes []models.WorkMode) bool {
+
+	var q []uint
+	var dataQ []uint
+
+	q = append(q, requestModes...)
+
+	for _, val := range jobModes {
+
+		dataQ = append(dataQ, uint(val.ID))
+	}
+	return areSlicesEqual(q, dataQ)
+}
+
+func areQualificationsMatching(requestQualifications []uint, jobQualifications []models.Qualification) bool {
+
+	var q []uint
+	var dataQ []uint
+
+	q = append(q, requestQualifications...)
+
+	for _, val := range jobQualifications {
+
+		dataQ = append(dataQ, uint(val.ID))
+	}
+	return areSlicesEqual(q, dataQ)
+}
 
 func areSlicesEqual(slice1, slice2 []uint) bool {
 
@@ -115,3 +179,27 @@ func areSlicesEqual(slice1, slice2 []uint) bool {
 
 	return true
 }
+
+// func areQualificationsMatching(requestQualifications []uint, jobQualifications []models.Qualification) bool {
+// 	// Convert the qualification IDs to a slice of uint
+// 	requestQualificationIDs := make([]uint, len(requestQualifications))
+// 	for i, v := range requestQualifications {
+// 		requestQualificationIDs[i] = uint(v)
+// 	}
+
+// 	fmt.Println(requestQualificationIDs)
+
+// 	jobQualificationIDs := make(map[uint]bool)
+// 	for _, val := range jobQualifications {
+// 		jobQualificationIDs[uint(val.ID)] = true
+// 	}
+
+// 	fmt.Println(jobQualificationIDs)
+// 	for _, id := range requestQualificationIDs {
+// 		if _, exists := jobQualificationIDs[id]; !exists {
+// 			return false
+// 		}
+// 	}
+
+// 	return true
+// }

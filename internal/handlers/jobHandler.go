@@ -138,22 +138,23 @@ func (h *handler) ViewJobByCompany(c *gin.Context) {
 func (h *handler) ProcessJobApplication(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	var newApplication models.ApplicationRequest
+	var newApplication []models.ApplicationRequest
 	err := json.NewDecoder(c.Request.Body).Decode(&newApplication)
 	if err != nil {
 		log.Info().Msg("error while converting request body to json")
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": http.StatusText(http.StatusInternalServerError)})
 		return
 	}
-	validate := validator.New()
-	err = validate.Struct(newApplication)
 
-	if err != nil {
-		log.Error().Err(err).Msg("validation failed")
-		c.AbortWithStatusJSON(http.StatusBadRequest,
-			gin.H{"msg": http.StatusText(http.StatusBadRequest)})
-		return
-	}
+	// validate := validator.New()
+	// err = validate.Struct(newApplication)
+
+	// if err != nil {
+	// 	log.Error().Err(err).Msg("validation failed")
+	// 	c.AbortWithStatusJSON(http.StatusBadRequest,
+	// 		gin.H{"msg": http.StatusText(http.StatusBadRequest)})
+	// 	return
+	// }
 
 	id := c.Param("id")
 	uid, err := strconv.Atoi(id)

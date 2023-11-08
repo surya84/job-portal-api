@@ -131,7 +131,7 @@ func (mr *MockServiceMockRecorder) GetJobInfoByID(ctx, jId any) *gomock.Call {
 }
 
 // ProcessJob mocks base method.
-func (m *MockService) ProcessJob(ctx context.Context, id int, nj models.ApplicationRequest) (*[]models.ApplicationRequest, error) {
+func (m *MockService) ProcessJob(ctx context.Context, id int, nj []models.ApplicationRequest) (*[]models.ApplicationRequest, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ProcessJob", ctx, id, nj)
 	ret0, _ := ret[0].(*[]models.ApplicationRequest)

@@ -38,23 +38,28 @@ func (r NewService) ViewJobByCompanyId(ctx context.Context, cId int) ([]models.J
 	return jobDetails, err
 }
 
-func (r NewService) ProcessJob(ctx context.Context, id int, nj models.NewJob) (models.NewJob, error) {
+func (r NewService) ProcessJob(ctx context.Context, id int, nj models.NewJob) (*[]models.NewJob, error) {
 
 	jobDetails, err := r.rp.GetJobProcessData(id)
 
-	if err != nil {
-		return models.NewJob{}, err
-	}
+	// var newjob models.NewJob
 
-	if areFieldsMatching(nj, jobDetails) {
-		return models.NewJob{}, nil
+	if err != nil {
+		return &[]models.NewJob{}, err
+	}
+	jobs := []models.NewJob{}
+
+	if areFieldsMatching(&nj, jobDetails) {
+
+		jobs = append(jobs, nj)
+
 	}
 
 	// If fields do not match, return an error
-	return models.NewJob{}, err
+	return &jobs, err
 }
 
-func areFieldsMatching(request models.NewJob, job models.Job) bool {
+func areFieldsMatching(request *models.NewJob, job models.Job) bool {
 	return request.Title == job.Title &&
 		request.CompanyID == job.CompanyID &&
 		request.Min_NoticePeriod == job.Min_NoticePeriod &&
@@ -62,13 +67,13 @@ func areFieldsMatching(request models.NewJob, job models.Job) bool {
 		request.Budget == job.Budget &&
 		request.Description == job.Description &&
 		request.Minimum_Experience == job.Minimum_Experience &&
-		request.Maximum_Experience == job.Maximum_Experience &&
-		areSlicesMatching(request.JobLocations, job.JobLocations) &&
-		areSlicesMatching(request.Qualification, job.Qualifications) &&
-		areSlicesMatching(request.Job_Type, job.JobTypes) &&
-		areSlicesMatching(request.Shift, job.Shifts) &&
-		areSlicesMatching(request.WorkMode, job.WorkMode) &&
-		areSlicesMatching(request.Technology_stack, job.Technology_stack)
+		request.Maximum_Experience == job.Maximum_Experience
+	// areSlicesMatching(request.JobLocations, job.JobLocations) &&
+	// areSlicesMatching(request.Qualification, job.Qualifications) &&
+	// areSlicesMatching(request.Job_Type, job.JobTypes) &&
+	// areSlicesMatching(request.Shift, job.Shifts) &&
+	// areSlicesMatching(request.WorkMode, job.WorkMode) &&
+	// areSlicesMatching(request.Technology_stack, job.Technology_stack)
 }
 
 func areSlicesMatching(request, db interface{}) bool {

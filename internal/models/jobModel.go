@@ -74,7 +74,7 @@ type NewJobResponse struct {
 	ID uint
 }
 
-type Application struct {
+type ApplicationRequest struct {
 	Title              string  `json:"title"`
 	Min_NoticePeriod   int     `json:"min_np" validate:"required"`
 	Max_NoticePeriod   int     `json:"max_np" validate:"required"`

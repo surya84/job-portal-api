@@ -37,16 +37,16 @@ func (r NewService) ViewJobByCompanyId(ctx context.Context, cId int) ([]models.J
 	return jobDetails, err
 }
 
-func (r NewService) ProcessJob(ctx context.Context, id int, nj models.Application) (*[]models.Application, error) {
+func (r NewService) ProcessJob(ctx context.Context, id int, nj models.ApplicationRequest) (*[]models.ApplicationRequest, error) {
 
 	jobDetails, err := r.rp.GetJobProcessData(id)
 
 	// var newjob models.NewJob
 
 	if err != nil {
-		return &[]models.Application{}, err
+		return &[]models.ApplicationRequest{}, err
 	}
-	jobs := []models.Application{}
+	jobs := []models.ApplicationRequest{}
 
 	if areFieldsMatching(&nj, &jobDetails) {
 
@@ -58,9 +58,9 @@ func (r NewService) ProcessJob(ctx context.Context, id int, nj models.Applicatio
 	return &jobs, err
 }
 
-func areFieldsMatching(request *models.Application, job *models.Job) bool {
+func areFieldsMatching(request *models.ApplicationRequest, job *models.Job) bool {
 	return request.Title == job.Title &&
-		//request.CompanyID == job.CompanyID &&
+		//request.companyId == job.CompanyId &&
 		request.Min_NoticePeriod == job.Min_NoticePeriod &&
 		request.Max_NoticePeriod == job.Max_NoticePeriod &&
 		request.Budget == job.Budget &&

@@ -138,7 +138,7 @@ func (h *handler) ViewJobByCompany(c *gin.Context) {
 func (h *handler) ProcessJobApplication(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	var newApplication models.Application
+	var newApplication models.ApplicationRequest
 	err := json.NewDecoder(c.Request.Body).Decode(&newApplication)
 	if err != nil {
 		log.Info().Msg("error while converting request body to json")

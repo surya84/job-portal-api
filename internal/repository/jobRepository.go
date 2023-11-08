@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"job-portal/internal/models"
+
+	"gorm.io/gorm"
 )
 
 func (s *Conn) CreateJ(ctx context.Context, nj models.NewJobRequest, cId int) (models.Job, error) {
@@ -19,47 +21,57 @@ func (s *Conn) CreateJ(ctx context.Context, nj models.NewJobRequest, cId int) (m
 		CompanyId:          uint(cId),
 	}
 
-	//job.JobLocations = getLocations(nj.JobLocations)
+	//job.Locations = getLocations(nj.Locations)
 
-	// for _, v := range nj.Qualifications {
-	// 	tempData := models.Qualification{
-	// 		Model: gorm.Model{
-	// 			ID: uint(),
-	// 		},
-	// 	}
-	// 	job.Qualifications = append(job.Qualifications, tempData)
-	// }
+	for _, v := range nj.Qualifications {
+		tempData := models.Qualification{
+			Model: gorm.Model{
+				ID: v,
+			},
+		}
+		job.Qualifications = append(job.Qualifications, tempData)
+	}
 
-	// for _, v := range nj.JobLocations {
-	// 	tempData := models.JobLocation{
-	// 		ID: int(v),
-	// 	}
-	// 	job.JobLocations = append(job.JobLocations, tempData)
-	// }
-	// for _, v := range nj.Shift {
-	// 	tempData := models.Shift{
-	// 		ID: int(v),
-	// 	}
-	// 	job.Shifts = append(job.Shifts, tempData)
-	// }
-	// for _, v := range nj.Technology_stack {
-	// 	tempData := models.Technology{
-	// 		ID: int(v),
-	// 	}
-	// 	job.Technology_stack = append(job.Technology_stack, tempData)
-	// }
-	// for _, v := range nj.Job_Type {
-	// 	tempData := models.JobType{
-	// 		ID: int(v),
-	// 	}
-	// 	job.JobTypes = append(job.JobTypes, tempData)
-	// }
-	// for _, v := range nj.WorkMode {
-	// 	tempData := models.WorkMode{
-	// 		ID: int(v),
-	// 	}
-	// 	job.WorkMode = append(job.WorkMode, tempData)
-	// }
+	for _, v := range nj.Locations {
+		tempData := models.Location{
+			Model: gorm.Model{
+				ID: v,
+			},
+		}
+		job.Locations = append(job.Locations, tempData)
+	}
+	for _, v := range nj.Shifts {
+		tempData := models.Shift{
+			Model: gorm.Model{
+				ID: v,
+			},
+		}
+		job.Shifts = append(job.Shifts, tempData)
+	}
+	for _, v := range nj.Technologies {
+		tempData := models.Technology{
+			Model: gorm.Model{
+				ID: v,
+			},
+		}
+		job.Technologies = append(job.Technologies, tempData)
+	}
+	for _, v := range nj.JobTypes {
+		tempData := models.JobType{
+			Model: gorm.Model{
+				ID: v,
+			},
+		}
+		job.JobTypes = append(job.JobTypes, tempData)
+	}
+	for _, v := range nj.WorkModes {
+		tempData := models.WorkMode{
+			Model: gorm.Model{
+				ID: v,
+			},
+		}
+		job.WorkModes = append(job.WorkModes, tempData)
+	}
 
 	tx := s.db.WithContext(ctx).Create(&job)
 
@@ -85,7 +97,7 @@ func (s *Conn) CreateJ(ctx context.Context, nj models.NewJobRequest, cId int) (m
 func (s *Conn) ViewJobs() ([]models.Job, error) {
 	var jobs []models.Job
 
-	err := s.db.Preload("JobLocations").Find(&jobs).Error
+	err := s.db.Preload("Locations").Preload("Qualifications").Preload("Locations").Preload("Shifts").Preload("Technologies").Preload("WorkModes").Preload("JobTypes").Find(&jobs).Error
 
 	if err != nil {
 		return []models.Job{}, err
@@ -119,7 +131,7 @@ func (s *Conn) GetJobProcessData(id int) (models.Job, error) {
 
 	var jobData models.Job
 
-	tx := s.db.Preload("Qualifications").Preload("Locations").Preload("Shifts").Preload("Technology_stack").Preload("WorkMode").Preload("JobTypes").Where("id", id)
+	tx := s.db.Preload("Qualifications").Preload("Locations").Preload("Shifts").Preload("Technologies").Preload("WorkModes").Preload("JobTypes").Where("id", id)
 
 	err := tx.Find(&jobData).Error
 

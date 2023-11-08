@@ -1,0 +1,53 @@
+[
+{
+    "title": "data science",
+    "min_np": 30,
+    "max_np": 60,
+    "budget": 75000,
+    "description": "data science",
+    "min_exp": 2.5,
+    "max_exp": 5.5,
+    "qualifications": [1,2, 3],
+    "shifts": [1, 2, 3],
+    "JobTypes": [1, 2,3],
+    "locations": [1, 2, 3],
+    "technologies": [1, 2, 3],
+    "WorkModes": [1, 2, 3]
+},
+{
+    "title": "data science",
+    "min_np": 30,
+    "max_np": 60,
+    "budget": 75000,
+    "description": "data science",
+    "min_exp": 2.5,
+    "max_exp": 5.5,
+    "qualifications": [2, 3],
+    "shifts": [1, 2, 3],
+    "JobTypes": [1, 2,3],
+    "locations": [1, 2, 3],
+    "technologies": [1, 2, 3],
+    "WorkModes": [1, 2, 3]
+}
+
+
+]
+
+
+
+
+{
+    "title": "data science",
+    "min_np": 30,
+    "max_np": 60,
+    "budget": 75000,
+    "description": "data science",
+    "min_exp": 2.5,
+    "max_exp": 5.5,
+    "qualifications": [1, 2, 3],
+    "shifts": [1, 2, 3],
+    "JobTypes": [1, 2,3],
+    "locations": [1, 2, 3],
+    "technologies": [1, 2, 3],
+    "WorkModes": [1, 2, 3]
+}

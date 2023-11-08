@@ -3,10 +3,9 @@ package service
 import (
 	"context"
 	"job-portal/internal/models"
-	reflect "reflect"
 )
 
-func (r NewService) CreateJob(ctx context.Context, nj models.NewJob, cId int) (models.Job, error) {
+func (r NewService) CreateJob(ctx context.Context, nj models.NewJobRequest, cId int) (models.Job, error) {
 	jobData, err := r.rp.CreateJ(ctx, nj, cId)
 	if err != nil {
 		return models.Job{}, err
@@ -38,18 +37,18 @@ func (r NewService) ViewJobByCompanyId(ctx context.Context, cId int) ([]models.J
 	return jobDetails, err
 }
 
-func (r NewService) ProcessJob(ctx context.Context, id int, nj models.NewJob) (*[]models.NewJob, error) {
+func (r NewService) ProcessJob(ctx context.Context, id int, nj models.Application) (*[]models.Application, error) {
 
 	jobDetails, err := r.rp.GetJobProcessData(id)
 
 	// var newjob models.NewJob
 
 	if err != nil {
-		return &[]models.NewJob{}, err
+		return &[]models.Application{}, err
 	}
-	jobs := []models.NewJob{}
+	jobs := []models.Application{}
 
-	if areFieldsMatching(&nj, jobDetails) {
+	if areFieldsMatching(&nj, &jobDetails) {
 
 		jobs = append(jobs, nj)
 
@@ -59,40 +58,57 @@ func (r NewService) ProcessJob(ctx context.Context, id int, nj models.NewJob) (*
 	return &jobs, err
 }
 
-func areFieldsMatching(request *models.NewJob, job models.Job) bool {
+func areFieldsMatching(request *models.Application, job *models.Job) bool {
 	return request.Title == job.Title &&
-		request.CompanyID == job.CompanyID &&
+		//request.CompanyID == job.CompanyID &&
 		request.Min_NoticePeriod == job.Min_NoticePeriod &&
 		request.Max_NoticePeriod == job.Max_NoticePeriod &&
 		request.Budget == job.Budget &&
 		request.Description == job.Description &&
 		request.Minimum_Experience == job.Minimum_Experience &&
 		request.Maximum_Experience == job.Maximum_Experience
-	// areSlicesMatching(request.JobLocations, job.JobLocations) &&
-	// areSlicesMatching(request.Qualification, job.Qualifications) &&
-	// areSlicesMatching(request.Job_Type, job.JobTypes) &&
-	// areSlicesMatching(request.Shift, job.Shifts) &&
-	// areSlicesMatching(request.WorkMode, job.WorkMode) &&
-	// areSlicesMatching(request.Technology_stack, job.Technology_stack)
+	//areQualificationsMatching(request, job)
+	//check(request.Qualification, job.Qualifications)
+	//check2()
+
 }
 
-func areSlicesMatching(request, db interface{}) bool {
-	requestValue := reflect.ValueOf(request)
-	dbValue := reflect.ValueOf(db)
+// func areQualificationsMatching(request *models.Application, jobs *models.Job) bool {
 
-	if requestValue.Kind() != dbValue.Kind() || requestValue.Len() != dbValue.Len() {
+// 	var q []uint
+// 	var dataQ []uint
+
+// 	for _, v := range request.Qualification {
+// 		q = append(q, v)
+// 	}
+// 	fmt.Println(q)
+
+// 	for _, val := range jobs.Qualifications {
+
+// 		fmt.Print(val.ID)
+
+// 		dataQ = append(dataQ, uint(val.ID))
+// 	}
+// 	fmt.Println(dataQ)
+
+// 	//equal := reflect.DeepEqual(q, dataQ)
+
+// 	if areSlicesEqual(q, dataQ) {
+// 		return true
+// 	}
+
+// 	return false
+
+// }
+
+func areSlicesEqual(slice1, slice2 []uint) bool {
+
+	if len(slice1) != len(slice2) {
 		return false
 	}
 
-	// Create a map for faster comparison
-	dbMap := make(map[interface{}]bool)
-	for i := 0; i < dbValue.Len(); i++ {
-		dbMap[dbValue.Index(i).Interface()] = true
-	}
-
-	// Check if each item in the request exists in the db
-	for i := 0; i < requestValue.Len(); i++ {
-		if _, exists := dbMap[requestValue.Index(i).Interface()]; !exists {
+	for i := 0; i < len(slice1); i++ {
+		if slice1[i] != slice2[i] {
 			return false
 		}
 	}

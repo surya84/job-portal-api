@@ -28,7 +28,7 @@ func (h *handler) AddJob(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": http.StatusText((http.StatusBadRequest))})
 		return
 	}
-	var newJob models.NewJob
+	var newJob models.NewJobRequest
 	err = json.NewDecoder(c.Request.Body).Decode(&newJob)
 	if err != nil {
 		log.Info().Msg("error while converting request body to json")
@@ -52,7 +52,7 @@ func (h *handler) AddJob(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, job)
+	c.JSON(http.StatusOK, gin.H{"job id ": job.ID})
 
 }
 
@@ -138,15 +138,15 @@ func (h *handler) ViewJobByCompany(c *gin.Context) {
 func (h *handler) ProcessJobApplication(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	var newJob models.NewJob
-	err := json.NewDecoder(c.Request.Body).Decode(&newJob)
+	var newApplication models.Application
+	err := json.NewDecoder(c.Request.Body).Decode(&newApplication)
 	if err != nil {
 		log.Info().Msg("error while converting request body to json")
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": http.StatusText(http.StatusInternalServerError)})
 		return
 	}
 	validate := validator.New()
-	err = validate.Struct(newJob)
+	err = validate.Struct(newApplication)
 
 	if err != nil {
 		log.Error().Err(err).Msg("validation failed")
@@ -163,7 +163,7 @@ func (h *handler) ProcessJobApplication(c *gin.Context) {
 		return
 	}
 
-	jobData, err := h.s.ProcessJob(ctx, uid, newJob)
+	jobData, err := h.s.ProcessJob(ctx, uid, newApplication)
 
 	if err != nil {
 		log.Error().Err(err).Msg("No data Found")

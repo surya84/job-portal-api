@@ -9,7 +9,7 @@ type Company struct {
 	Location string
 
 	//Users []User // Relationship: A company can have multiple users
-	Jobs []Job `json:"-"` // Relationship: A company can have multiple jobs
+	Jobs []Job `json:"jobs,omitempty" gorm:"foreignKey:CompanyId"`
 }
 
 type NewCompany struct {

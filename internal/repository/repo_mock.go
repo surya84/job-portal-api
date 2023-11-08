@@ -71,7 +71,7 @@ func (mr *MockRepositoryMockRecorder) CreateC(ctx, nc any) *gomock.Call {
 }
 
 // CreateJ mocks base method.
-func (m *MockRepository) CreateJ(ctx context.Context, nj models.NewJob, cId int) (models.Job, error) {
+func (m *MockRepository) CreateJ(ctx context.Context, nj models.NewJobRequest, cId int) (models.Job, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateJ", ctx, nj, cId)
 	ret0, _ := ret[0].(models.Job)

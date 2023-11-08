@@ -14,7 +14,7 @@ import (
 func TestNewService_CreateJob(t *testing.T) {
 	type args struct {
 		ctx context.Context
-		nj  models.NewJob
+		nj  models.NewJobRequest
 		cId int
 	}
 	tests := []struct {
@@ -29,10 +29,10 @@ func TestNewService_CreateJob(t *testing.T) {
 			name: "error in creating job",
 			args: args{
 				ctx: context.Background(),
-				nj: models.NewJob{
+				nj: models.NewJobRequest{
 					Title:       "software developer",
 					Description: "develop mobile applications",
-					CompanyID:   24,
+					//CompanyID:   24,
 				},
 			},
 			want: models.Job{},
@@ -47,24 +47,24 @@ func TestNewService_CreateJob(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 
-				nj: models.NewJob{
+				nj: models.NewJobRequest{
 					Title:       "software developer",
 					Description: "develop mobile applications",
-					CompanyID:   24,
+					//CompanyID:   24,
 				},
 			},
 
 			want: models.Job{
 				Title:       "software developer",
 				Description: "develop mobile applications",
-				CompanyID:   24,
+				//CompanyID:   24,
 			},
 
 			mockRepoResponse: func() (models.Job, error) {
 				return models.Job{
 					Title:       "software developer",
 					Description: "develop mobile applications",
-					CompanyID:   24,
+					//CompanyID:   24,
 				}, nil
 			},
 			wantErr: false,
@@ -117,7 +117,7 @@ func TestNewService_ViewJob(t *testing.T) {
 				{
 					Title:       "software developer",
 					Description: "develop mobile applications",
-					CompanyID:   24,
+					//CompanyID:   24,
 				},
 			},
 
@@ -126,7 +126,7 @@ func TestNewService_ViewJob(t *testing.T) {
 					{
 						Title:       "software developer",
 						Description: "develop mobile applications",
-						CompanyID:   24,
+						//CompanyID:   24,
 					},
 				}, nil
 			},
@@ -259,7 +259,7 @@ func TestNewService_ViewJobByCompanyId(t *testing.T) {
 				models.Job{
 					Title:       "software developer",
 					Description: "develop mobile apps",
-					CompanyID:   12,
+					//CompanyID:   12,
 				},
 			},
 
@@ -268,7 +268,7 @@ func TestNewService_ViewJobByCompanyId(t *testing.T) {
 					models.Job{
 						Title:       "software developer",
 						Description: "develop mobile apps",
-						CompanyID:   12,
+						//CompanyID:   12,
 					},
 				}, nil
 			},

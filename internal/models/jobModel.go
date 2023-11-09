@@ -75,18 +75,14 @@ type NewJobResponse struct {
 }
 
 type ApplicationRequest struct {
-	Title              string  `json:"title"`
-	Min_NoticePeriod   int     `json:"min_np" validate:"required"`
-	Max_NoticePeriod   int     `json:"max_np" validate:"required"`
-	Budget             float64 `json:"budget" validate:"required"`
-	Description        string  `json:"description" validate:"required"`
-	Minimum_Experience float64 `json:"min_exp" validate:"required"`
-	Maximum_Experience float64 `json:"max_exp" validate:"required"`
-
-	Qualifications []uint `gorm:"many2many:job_qualifications;"`
-	Shifts         []uint `gorm:"many2many:job_shifts;"`
-	JobTypes       []uint `gorm:"many2many:job_job_types;"`
-	Locations      []uint `gorm:"many2many:job_locations;"`
-	Technologies   []uint `gorm:"many2many:job_technology;"`
-	WorkModes      []uint `gorm:"many2many:job_work_modes;"`
+	Title          string  `json:"title"`
+	NoticePeriod   int     `json:"noticePeriod" validate:"required"`
+	Budget         float64 `json:"budget" validate:"required"`
+	Experience     float64 `json:"min_exp" validate:"required"`
+	Qualifications []uint  `gorm:"many2many:job_qualifications;"`
+	Shifts         []uint  `gorm:"many2many:job_shifts;"`
+	JobTypes       []uint  `gorm:"many2many:job_job_types;"`
+	Locations      []uint  `gorm:"many2many:job_locations;"`
+	Technologies   []uint  `gorm:"many2many:job_technology;"`
+	WorkModes      []uint  `gorm:"many2many:job_work_modes;"`
 }

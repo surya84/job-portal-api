@@ -6,6 +6,7 @@ import (
 	"job-portal/internal/models"
 	"net/http"
 	"strconv"
+	"sync"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
@@ -138,6 +139,13 @@ func (h *handler) ViewJobByCompany(c *gin.Context) {
 func (h *handler) ProcessJobApplication(c *gin.Context) {
 	ctx := c.Request.Context()
 
+	traceId, ok := ctx.Value(middleware.TraceIdKey).(string)
+	if !ok {
+		log.Error().Msg("traceId missing from context")
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": http.StatusText(http.StatusInternalServerError)})
+		return
+	}
+
 	var newApplication []models.ApplicationRequest
 	err := json.NewDecoder(c.Request.Body).Decode(&newApplication)
 	if err != nil {
@@ -145,6 +153,49 @@ func (h *handler) ProcessJobApplication(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": http.StatusText(http.StatusInternalServerError)})
 		return
 	}
+
+	id := c.Param("id")
+	uid, err := strconv.Atoi(id)
+	if err != nil {
+		log.Info().Msg("Error while converting to int")
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": http.StatusText(http.StatusInternalServerError)})
+		return
+	}
+
+	validate := validator.New()
+	var wg sync.WaitGroup
+	userChannel := make(chan models.ApplicationRequest, len(newApplication))
+	for _, application := range newApplication {
+		wg.Add(1)
+		go func(application models.ApplicationRequest) {
+			defer wg.Done()
+			if err := validate.Struct(application); err != nil {
+				log.Error().Err(err).Str("Trace Id", traceId).Msg("error while converting to struct")
+				c.AbortWithStatusJSON(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+				return
+			}
+			user, err := h.s.ProcessJob(ctx, uid, application)
+			if err != nil {
+				log.Error().Err(err).Str("Trace Id", traceId).Msg("error while applying job")
+				//c.AbortWithStatusJSON(http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
+				return
+			}
+
+			userChannel <- user
+		}(application)
+
+	}
+
+	go func() {
+		wg.Wait()
+		close(userChannel)
+	}()
+
+	var users []models.ApplicationRequest
+	for user := range userChannel {
+		users = append(users, user)
+	}
+	c.IndentedJSON(http.StatusOK, users)
 
 	// validate := validator.New()
 	// err = validate.Struct(newApplication)
@@ -156,21 +207,4 @@ func (h *handler) ProcessJobApplication(c *gin.Context) {
 	// 	return
 	// }
 
-	id := c.Param("id")
-	uid, err := strconv.Atoi(id)
-	if err != nil {
-		log.Info().Msg("Error while converting to int")
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": http.StatusText(http.StatusInternalServerError)})
-		return
-	}
-
-	jobData, err := h.s.ProcessJob(ctx, uid, newApplication)
-
-	if err != nil {
-		log.Error().Err(err).Msg("No data Found")
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"msg": http.StatusText(http.StatusInternalServerError)})
-		return
-	}
-
-	c.IndentedJSON(http.StatusOK, jobData)
 }

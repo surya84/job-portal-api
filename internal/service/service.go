@@ -24,7 +24,7 @@ type Service interface {
 	ViewCompany(ctx context.Context) ([]models.Company, error)
 	GetCompanyInfoByID(ctx context.Context, uid int) (models.Company, error)
 
-	ProcessJob(ctx context.Context, id int, nj []models.ApplicationRequest) (*[]models.ApplicationRequest, error)
+	ProcessJob(ctx context.Context, id int, nj models.ApplicationRequest) (models.ApplicationRequest, error)
 }
 
 func NewServiceStore(s repository.Repository) Service {

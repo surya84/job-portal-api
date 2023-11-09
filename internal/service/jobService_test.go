@@ -298,3 +298,40 @@ func TestNewService_ViewJobByCompanyId(t *testing.T) {
 		})
 	}
 }
+
+func TestNewService_ProcessJob(t *testing.T) {
+	type args struct {
+		ctx context.Context
+		id  int
+		nj  models.ApplicationRequest
+	}
+	tests := []struct {
+		name    string
+		r       NewService
+		args    args
+		want    models.ApplicationRequest
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ms := gomock.NewController(t)
+
+			mockRepo := repository.NewMockRepository(ms)
+
+			if tt.mockRepoResponse != nil {
+				mockRepo.EXPECT().GetJobProcessData()
+			}
+
+			got, err := tt.r.ProcessJob(tt.args.ctx, tt.args.id, tt.args.nj)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewService.ProcessJob() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewService.ProcessJob() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

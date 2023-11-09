@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"job-portal/internal/models"
+	"sync"
 )
 
 func (r NewService) CreateJob(ctx context.Context, nj models.NewJobRequest, cId int) (models.NewJobResponse, error) {
@@ -146,19 +147,48 @@ func sliceContainsAtLeastOne(slice, subSlice []uint) bool {
 
 }
 
-func (r NewService) ProcessJob(ctx context.Context, nj models.ApplicationRequest) (models.ApplicationRequest, error) {
+func (r NewService) ProcessJob(ctx context.Context, nj []models.ApplicationRequest) ([]models.ApplicationRequest, error) {
 	//var count int
 
-	uid := nj.Id
-	job, err := r.rp.GetJobProcessData(uid)
-	if err != nil {
-		return models.ApplicationRequest{}, err
+	var newApplication []models.ApplicationRequest
+
+	var wg sync.WaitGroup
+	userChannel := make(chan models.ApplicationRequest, len(newApplication))
+	for _, application := range newApplication {
+		wg.Add(1)
+		go func(application models.ApplicationRequest) {
+			defer wg.Done()
+			uid := application.Id
+			job, _ := r.rp.GetJobProcessData(uid)
+			// if err != nil {
+			// 	return []models.ApplicationRequest, err
+			// }
+			user, err := compare(application, job)
+			if err != nil {
+				return
+			}
+
+			// response, err := compare(nj, job)
+			// if err != nil {
+			// 	return []models.ApplicationRequest{}, err
+			// }
+
+			// result = append(result, response)
+
+			userChannel <- user
+		}(application)
+
 	}
 
-	result, err := compare(nj, job)
-	if err != nil {
-		return models.ApplicationRequest{}, err
+	go func() {
+		wg.Wait()
+		close(userChannel)
+	}()
+
+	var users []models.ApplicationRequest
+	for user := range userChannel {
+		users = append(users, user)
 	}
 
-	return result, nil
+	return users, nil
 }

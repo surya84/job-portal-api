@@ -407,3 +407,66 @@ func Test_handler_ViewJobs(t *testing.T) {
 		})
 	}
 }
+
+func Test_handler_ProcessJobApplication(t *testing.T) {
+
+	tests := []struct {
+		name               string
+		setup              func() (*gin.Context, *httptest.ResponseRecorder, service.Service)
+		expectedStatusCode int
+		expectedResponse   string
+	}{
+
+		{
+			name: "trace id missing",
+			setup: func() (*gin.Context, *httptest.ResponseRecorder, service.Service) {
+				rr := httptest.NewRecorder()
+				c, _ := gin.CreateTestContext(rr)
+				//var d []models.ApplicationRequest
+				httpReq, _ := http.NewRequest(http.MethodGet, "http://google.com", nil)
+
+				c.Request = httpReq
+
+				return c, rr, nil
+
+			},
+			expectedStatusCode: http.StatusInternalServerError,
+			expectedResponse:   `{"error":"Internal Server Error"}`,
+		},
+		{
+			name: "error while converting into json",
+			setup: func() (*gin.Context, *httptest.ResponseRecorder, service.Service) {
+				rr := httptest.NewRecorder()
+				c, _ := gin.CreateTestContext(rr)
+				requestBody := []byte(`{"key": "value"}`)
+				httpReq, _ := http.NewRequest(http.MethodGet, "http://google.com:8080", bytes.NewBuffer(requestBody))
+				ctx := httpReq.Context()
+				ctx = context.WithValue(ctx, middleware.TraceIdKey, "693")
+				httpReq = httpReq.WithContext(ctx)
+				c.Params = append(c.Params, gin.Param{Key: "id", Value: "1"})
+				c.Request = httpReq
+
+				return c, rr, nil
+			},
+			expectedStatusCode: http.StatusInternalServerError,
+			expectedResponse:   `{"error":"Internal Server Error"}`,
+		},
+		{
+			
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			gin.SetMode(gin.TestMode)
+			c, rr, ms := tt.setup()
+			h := &handler{
+				s: ms,
+			}
+			h.ProcessJobApplication(c)
+			assert.Equal(t, tt.expectedStatusCode, rr.Code)
+			assert.Equal(t, tt.expectedResponse, rr.Body.String())
+
+		})
+	}
+}

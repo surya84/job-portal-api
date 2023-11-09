@@ -6,7 +6,6 @@ import (
 	"job-portal/internal/models"
 	"net/http"
 	"strconv"
-	"sync"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
@@ -154,49 +153,24 @@ func (h *handler) ProcessJobApplication(c *gin.Context) {
 		return
 	}
 
-	validate := validator.New()
-	var wg sync.WaitGroup
-	userChannel := make(chan models.ApplicationRequest, len(newApplication))
-	for _, application := range newApplication {
-		wg.Add(1)
-		go func(application models.ApplicationRequest) {
-			defer wg.Done()
-			if err := validate.Struct(application); err != nil {
-				log.Error().Err(err).Str("Trace Id", traceId).Msg("error while converting to struct")
-				c.AbortWithStatusJSON(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
-				return
-			}
-			user, err := h.s.ProcessJob(ctx, application)
-			if err != nil {
-				log.Error().Err(err).Str("Trace Id", traceId).Msg("error while applying job")
-				//c.AbortWithStatusJSON(http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
-				return
-			}
-
-			userChannel <- user
-		}(application)
+	for _, val := range newApplication {
+		validate := validator.New()
+		if err := validate.Struct(val); err != nil {
+			log.Error().Err(err).Str("Trace Id", traceId).Msg("error while converting to struct")
+			c.AbortWithStatusJSON(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+			return
+		}
 
 	}
 
-	go func() {
-		wg.Wait()
-		close(userChannel)
-	}()
+	jobData, err := h.s.ProcessJob(ctx, newApplication)
 
-	var users []models.ApplicationRequest
-	for user := range userChannel {
-		users = append(users, user)
+	if err != nil {
+		log.Error().Err(err).Str("Trace Id", traceId).Msg("error while applying job")
+		c.AbortWithStatusJSON(http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
+		return
 	}
-	c.IndentedJSON(http.StatusOK, users)
 
-	// validate := validator.New()
-	// err = validate.Struct(newApplication)
-
-	// if err != nil {
-	// 	log.Error().Err(err).Msg("validation failed")
-	// 	c.AbortWithStatusJSON(http.StatusBadRequest,
-	// 		gin.H{"msg": http.StatusText(http.StatusBadRequest)})
-	// 	return
-	// }
+	c.IndentedJSON(http.StatusOK, jobData)
 
 }

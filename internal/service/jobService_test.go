@@ -306,25 +306,59 @@ func TestNewService_ProcessJob(t *testing.T) {
 		nj  models.ApplicationRequest
 	}
 	tests := []struct {
-		name    string
-		r       NewService
-		args    args
-		want    models.ApplicationRequest
-		wantErr bool
+		name             string
+		r                NewService
+		args             args
+		want             models.ApplicationRequest
+		wantErr          bool
+		mockRepoResponse func() (models.Job, error)
 	}{
-		// TODO: Add test cases.
+		{
+			name: "error in db",
+			args: args{
+				ctx: context.Background(),
+				id:  12,
+				nj:  models.ApplicationRequest{},
+			},
+			want: models.ApplicationRequest{},
+			mockRepoResponse: func() (models.Job, error) {
+				return models.Job{}, errors.New("error in fetching data")
+			},
+			wantErr: true,
+		},
+		// {
+		// 	name: "success",
+		// 	args: args{
+		// 		ctx: context.Background(),
+		// 		id:  12,
+		// 		nj:  models.ApplicationRequest{},
+		// 	},
+		// 	want: models.ApplicationRequest{},
+		// 	mockRepoResponse: func() (models.Job, error) {
+		// 		return models.Job{}, errors.New("error in fetching data")
+		// 	},
+		// 	wantErr: false,
+		// },
+		{
+			name: "request not accepted",
+			args: args{
+				ctx: context.Background(),
+				id:  12,
+				nj:  models.ApplicationRequest{},
+			},
+			want: models.ApplicationRequest{},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ms := gomock.NewController(t)
-
 			mockRepo := repository.NewMockRepository(ms)
 
 			if tt.mockRepoResponse != nil {
-				mockRepo.EXPECT().GetJobProcessData()
+				mockRepo.EXPECT().GetJobProcessData(tt.args.id).Return(tt.mockRepoResponse()).AnyTimes()
 			}
-
-			got, err := tt.r.ProcessJob(tt.args.ctx, tt.args.id, tt.args.nj)
+			s := NewServiceStore(mockRepo)
+			got, err := s.ProcessJob(tt.args.ctx, tt.args.id, tt.args.nj)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewService.ProcessJob() error = %v, wantErr %v", err, tt.wantErr)
 				return

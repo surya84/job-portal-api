@@ -71,10 +71,10 @@ func (mr *MockServiceMockRecorder) CreateCompany(ctx, ni any) *gomock.Call {
 }
 
 // CreateJob mocks base method.
-func (m *MockService) CreateJob(ctx context.Context, nj models.NewJobRequest, cId int) (models.Job, error) {
+func (m *MockService) CreateJob(ctx context.Context, nj models.NewJobRequest, cId int) (models.NewJobResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateJob", ctx, nj, cId)
-	ret0, _ := ret[0].(models.Job)
+	ret0, _ := ret[0].(models.NewJobResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -131,18 +131,18 @@ func (mr *MockServiceMockRecorder) GetJobInfoByID(ctx, jId any) *gomock.Call {
 }
 
 // ProcessJob mocks base method.
-func (m *MockService) ProcessJob(ctx context.Context, id int, nj models.ApplicationRequest) (models.ApplicationRequest, error) {
+func (m *MockService) ProcessJob(ctx context.Context, nj models.ApplicationRequest) (models.ApplicationRequest, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ProcessJob", ctx, id, nj)
+	ret := m.ctrl.Call(m, "ProcessJob", ctx, nj)
 	ret0, _ := ret[0].(models.ApplicationRequest)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ProcessJob indicates an expected call of ProcessJob.
-func (mr *MockServiceMockRecorder) ProcessJob(ctx, id, nj any) *gomock.Call {
+func (mr *MockServiceMockRecorder) ProcessJob(ctx, nj any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ProcessJob", reflect.TypeOf((*MockService)(nil).ProcessJob), ctx, id, nj)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ProcessJob", reflect.TypeOf((*MockService)(nil).ProcessJob), ctx, nj)
 }
 
 // ViewCompany mocks base method.

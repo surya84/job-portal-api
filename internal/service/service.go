@@ -16,7 +16,7 @@ type NewService struct {
 type Service interface {
 	CreateUser(ctx context.Context, nu models.NewUser) (models.User, error)
 	Authenticate(ctx context.Context, email string, password string) (jwt.RegisteredClaims, error)
-	CreateJob(ctx context.Context, nj models.NewJobRequest, cId int) (models.Job, error)
+	CreateJob(ctx context.Context, nj models.NewJobRequest, cId int) (models.NewJobResponse, error)
 	ViewJob(ctx context.Context) ([]models.Job, error)
 	GetJobInfoByID(ctx context.Context, jId int) (models.Job, error)
 	ViewJobByCompanyId(ctx context.Context, cId int) ([]models.Job, error)
@@ -24,7 +24,7 @@ type Service interface {
 	ViewCompany(ctx context.Context) ([]models.Company, error)
 	GetCompanyInfoByID(ctx context.Context, uid int) (models.Company, error)
 
-	ProcessJob(ctx context.Context, id int, nj models.ApplicationRequest) (models.ApplicationRequest, error)
+	ProcessJob(ctx context.Context, nj models.ApplicationRequest) (models.ApplicationRequest, error)
 }
 
 func NewServiceStore(s repository.Repository) Service {

@@ -75,6 +75,8 @@ type NewJobResponse struct {
 }
 
 type ApplicationRequest struct {
+	Name           string  `json:"name"`
+	Id             int     `json:"id"`
 	Title          string  `json:"title"`
 	NoticePeriod   int     `json:"noticePeriod" validate:"required"`
 	Budget         float64 `json:"budget" validate:"required"`

@@ -56,14 +56,6 @@ func (s *Conn) CreateJ(ctx context.Context, nj models.NewJobRequest, cId int) (m
 		}
 		job.Technologies = append(job.Technologies, tempData)
 	}
-	// for _, v := range nj.JobTypes {
-	// 	tempData := models.JobType{
-	// 		Model: gorm.Model{
-	// 			ID: v,
-	// 		},
-	// 	}
-	// 	job.JobTypes = append(job.JobTypes, tempData)
-	// }
 
 	for _, v := range nj.JobTypes {
 		tempData := models.JobType{

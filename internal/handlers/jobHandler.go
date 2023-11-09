@@ -53,7 +53,7 @@ func (h *handler) AddJob(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"job id ": job.ID})
+	c.JSON(http.StatusOK, job)
 
 }
 
@@ -154,14 +154,6 @@ func (h *handler) ProcessJobApplication(c *gin.Context) {
 		return
 	}
 
-	id := c.Param("id")
-	uid, err := strconv.Atoi(id)
-	if err != nil {
-		log.Info().Msg("Error while converting to int")
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": http.StatusText(http.StatusInternalServerError)})
-		return
-	}
-
 	validate := validator.New()
 	var wg sync.WaitGroup
 	userChannel := make(chan models.ApplicationRequest, len(newApplication))
@@ -174,7 +166,7 @@ func (h *handler) ProcessJobApplication(c *gin.Context) {
 				c.AbortWithStatusJSON(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 				return
 			}
-			user, err := h.s.ProcessJob(ctx, uid, application)
+			user, err := h.s.ProcessJob(ctx, application)
 			if err != nil {
 				log.Error().Err(err).Str("Trace Id", traceId).Msg("error while applying job")
 				//c.AbortWithStatusJSON(http.StatusBadRequest, http.StatusText(http.StatusBadRequest))

@@ -6,12 +6,15 @@ import (
 	"job-portal/internal/models"
 )
 
-func (r NewService) CreateJob(ctx context.Context, nj models.NewJobRequest, cId int) (models.Job, error) {
+func (r NewService) CreateJob(ctx context.Context, nj models.NewJobRequest, cId int) (models.NewJobResponse, error) {
 	jobData, err := r.rp.CreateJ(ctx, nj, cId)
 	if err != nil {
-		return models.Job{}, err
+		return models.NewJobResponse{}, err
 	}
-	return jobData, err
+	jobId := models.NewJobResponse{
+		ID: jobData.ID,
+	}
+	return jobId, err
 }
 
 func (r NewService) ViewJob(ctx context.Context) ([]models.Job, error) {
@@ -38,30 +41,24 @@ func (r NewService) ViewJobByCompanyId(ctx context.Context, cId int) ([]models.J
 	return jobDetails, err
 }
 
-func (r NewService) ProcessJob(ctx context.Context, id int, nj models.ApplicationRequest) (models.ApplicationRequest, error) {
+func compare(nj models.ApplicationRequest, job models.Job) (models.ApplicationRequest, error) {
 	var count int
-	job, err := r.rp.GetJobProcessData(id)
-	if err != nil {
+	err := errors.New("")
+	if nj.Budget > job.Budget {
 		return models.ApplicationRequest{}, err
+		//count++
 	}
-	err = errors.New("")
-	if nj.Budget <= job.Budget {
-		count++
-	} else {
-		return models.ApplicationRequest{}, err
-	}
-	if nj.NoticePeriod >= job.Min_NoticePeriod && nj.NoticePeriod <= job.Max_NoticePeriod {
-		count++
-	} else {
+
+	if nj.NoticePeriod > job.Min_NoticePeriod {
+		//count++
 		return models.ApplicationRequest{}, err
 	}
 
-	if nj.Experience >= job.Minimum_Experience && nj.Experience <= job.Maximum_Experience {
-		count++
-	} else {
+	if nj.Experience < job.Minimum_Experience {
 		return models.ApplicationRequest{}, err
+		//count++
 	}
-
+	recover()
 	//comparing job criteria locations and application criteria locations
 	var loc_job []uint
 	var loc_app []uint
@@ -146,4 +143,22 @@ func sliceContainsAtLeastOne(slice, subSlice []uint) bool {
 		}
 	}
 	return false
+
+}
+
+func (r NewService) ProcessJob(ctx context.Context, nj models.ApplicationRequest) (models.ApplicationRequest, error) {
+	//var count int
+
+	uid := nj.Id
+	job, err := r.rp.GetJobProcessData(uid)
+	if err != nil {
+		return models.ApplicationRequest{}, err
+	}
+
+	result, err := compare(nj, job)
+	if err != nil {
+		return models.ApplicationRequest{}, err
+	}
+
+	return result, nil
 }

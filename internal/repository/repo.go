@@ -30,26 +30,6 @@ type Repository interface {
 	GetJobProcessData(id int) (models.Job, error)
 }
 
-// type RepoStore struct {
-// 	Repository
-// }
-
-// func NewRepoStore(r Repository) Repository {
-// 	return RepoStore{Repository: r}
-// }
-
-// // NewService is the constructor for the Conn struct.
-// func NewRepo(db *gorm.DB) (*Conn, error) {
-
-// 	// We check if the database instance is nil, which would indicate an issue.
-// 	if db == nil {
-// 		return nil, errors.New("please provide a valid connection")
-// 	}
-
-//		// We initialize our service with the passed database instance.
-//		s := &Conn{db: db}
-//		return s, nil
-//	}
 func NewRepo(db *gorm.DB) (Repository, error) {
 	if db == nil {
 		return nil, errors.New("db cannot be nil")

@@ -36,6 +36,43 @@
 
 
 
+[
+
+    {
+        "name":"dhoni",
+        "id":2,
+    "title": "data science",
+    "noticePeriod": 10,
+    "budget": 1200,
+    "min_exp": 4.5,
+    "qualifications": [1, 2],
+    "shifts": [1, 2, 3],
+    "jobTypes": [1, 2, 3],
+    "locations": [1, 2, 3],
+    "technologies": [1],
+    "workModes": [1, 2, 3]
+},
+ {
+     "name":"jadeja",
+        "id":3,
+    "title": "java developer",
+    "noticePeriod": 80,
+    "budget": 1200,
+    "min_exp": 4.5,
+    "qualifications": [1, 2],
+    "shifts": [1, 2, 3],
+    "jobTypes": [1, 2, 3],
+    "locations": [1, 2, 3],
+    "technologies": [1, 2, 3],
+    "workModes": [1, 2, 3]
+}
+
+]
+
+
+
+
+
 {
     "title": "data science",
     "min_np": 30,

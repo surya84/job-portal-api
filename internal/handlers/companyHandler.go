@@ -25,6 +25,7 @@ func (h *handler) CreateCompany(c *gin.Context) {
 	if err != nil {
 		log.Error().Str("Trace Id", traceId).Msg("login first")
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": http.StatusText(http.StatusBadRequest)})
+
 		return
 	}
 	validate := validator.New()
@@ -32,14 +33,18 @@ func (h *handler) CreateCompany(c *gin.Context) {
 
 	if err != nil {
 		log.Error().Err(err).Str("Trace Id", traceId).Send()
-		c.AbortWithStatusJSON(http.StatusBadRequest,
-			gin.H{"error": "Bad Request"})
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{"error": "Bad Request"},
+		)
+
 		return
 	}
 	com, err := h.s.CreateCompany(ctx, newCom)
 	if err != nil {
 		log.Error().Err(err).Str("Trace Id", traceId)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return
 	}
 
@@ -51,7 +56,10 @@ func (h *handler) ViewCompany(c *gin.Context) {
 	traceId, ok := ctx.Value(middleware.TraceIdKey).(string)
 	if !ok {
 		log.Error().Msg("traceId missing from context")
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": http.StatusText(http.StatusInternalServerError)})
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{"error": http.StatusText(http.StatusInternalServerError)},
+		)
 		return
 	}
 	data, err := h.s.ViewCompany(ctx)

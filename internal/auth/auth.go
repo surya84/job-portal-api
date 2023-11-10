@@ -21,6 +21,7 @@ func NewAuth(privateKey *rsa.PrivateKey, publicKey *rsa.PublicKey) (*Auth, error
 	if privateKey == nil || publicKey == nil {
 		return nil, errors.New("private/public key cannot be nil")
 	}
+	
 	return &Auth{
 		privateKey: privateKey,
 		publicKey:  publicKey,
@@ -53,5 +54,6 @@ func (a *Auth) ValidateToken(token string) (jwt.RegisteredClaims, error) {
 	if !tkn.Valid {
 		return jwt.RegisteredClaims{}, errors.New("invalid token")
 	}
+	
 	return c, nil
 }

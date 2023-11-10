@@ -5,6 +5,8 @@ import (
 	"errors"
 	"job-portal/internal/models"
 	"sync"
+
+	"github.com/rs/zerolog/log"
 )
 
 func (r NewService) CreateJob(ctx context.Context, nj models.NewJobRequest, cId int) (models.NewJobResponse, error) {
@@ -42,24 +44,30 @@ func (r NewService) ViewJobByCompanyId(ctx context.Context, cId int) ([]models.J
 	return jobDetails, err
 }
 
-func compare(nj models.ApplicationRequest, job models.Job) (models.ApplicationRequest, error) {
+func Compare(nj models.ApplicationRequest, job models.Job) (models.ApplicationRequest, error) {
+
+	//fmt.Println("entering into compare function")
 	var count int
 	err := errors.New("")
 	if nj.Budget > job.Budget {
+
 		return models.ApplicationRequest{}, err
-		//count++
 	}
 
-	if nj.NoticePeriod > job.Min_NoticePeriod {
-		//count++
+	if nj.NoticePeriod >= job.Min_NoticePeriod && nj.NoticePeriod <= job.Max_NoticePeriod {
+
+		//log.Info().Str("Min_NP", "true").Send()
+		count++
+	} else {
+		log.Info().Str("Min_NP", "false").Send()
 		return models.ApplicationRequest{}, err
 	}
 
 	if nj.Experience < job.Minimum_Experience {
+
 		return models.ApplicationRequest{}, err
-		//count++
+
 	}
-	recover()
 	//comparing job criteria locations and application criteria locations
 	var loc_job []uint
 	var loc_app []uint
@@ -148,22 +156,23 @@ func sliceContainsAtLeastOne(slice, subSlice []uint) bool {
 }
 
 func (r NewService) ProcessJob(ctx context.Context, nj []models.ApplicationRequest) ([]models.ApplicationRequest, error) {
-	//var count int
-
-	var newApplication []models.ApplicationRequest
 
 	var wg sync.WaitGroup
-	userChannel := make(chan models.ApplicationRequest, len(newApplication))
-	for _, application := range newApplication {
+	userChannel := make(chan models.ApplicationRequest, len(nj))
+	for _, application := range nj {
 		wg.Add(1)
 		go func(application models.ApplicationRequest) {
 			defer wg.Done()
-			uid := application.Id
-			job, _ := r.rp.GetJobProcessData(uid)
-			// if err != nil {
-			// 	return []models.ApplicationRequest, err
-			// }
-			user, err := compare(application, job)
+			jid := application.Id
+
+			job, err := r.rp.GetJobProcessData(jid)
+
+			if err != nil {
+				return
+			}
+
+			user, err := Compare(application, job)
+
 			if err != nil {
 				return
 			}

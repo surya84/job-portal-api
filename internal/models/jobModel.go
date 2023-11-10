@@ -80,7 +80,7 @@ type ApplicationRequest struct {
 	Title          string  `json:"title"`
 	NoticePeriod   int     `json:"noticePeriod" validate:"required"`
 	Budget         float64 `json:"budget" validate:"required"`
-	Experience     float64 `json:"min_exp" validate:"required"`
+	Experience     float64 `json:"min_exp"`
 	Qualifications []uint  `gorm:"many2many:job_qualifications;"`
 	Shifts         []uint  `gorm:"many2many:job_shifts;"`
 	JobTypes       []uint  `gorm:"many2many:job_job_types;"`

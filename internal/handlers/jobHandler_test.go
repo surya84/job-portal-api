@@ -47,7 +47,7 @@ func Test_handler_ViewJobByCompany(t *testing.T) {
 				ctx := httpReq.Context()
 				ctx = context.WithValue(ctx, middleware.TraceIdKey, "693")
 				httpReq = httpReq.WithContext(ctx)
-				c.Params = append(c.Params, gin.Param{Key: "id", Value: "vishnu"})
+				c.Params = append(c.Params, gin.Param{Key: "id", Value: "surya"})
 				c.Request = httpReq
 
 				return c, rr, nil
@@ -139,7 +139,7 @@ func Test_handler_ViewJobById(t *testing.T) {
 				ctx := httpReq.Context()
 				ctx = context.WithValue(ctx, middleware.TraceIdKey, "693")
 				httpReq = httpReq.WithContext(ctx)
-				c.Params = append(c.Params, gin.Param{Key: "id", Value: "vishnu"})
+				c.Params = append(c.Params, gin.Param{Key: "id", Value: "surya"})
 				c.Request = httpReq
 
 				return c, rr, nil
@@ -232,7 +232,7 @@ func Test_handler_AddJob(t *testing.T) {
 				ctx := httpReq.Context()
 				ctx = context.WithValue(ctx, middleware.TraceIdKey, "693")
 				httpReq = httpReq.WithContext(ctx)
-				c.Params = append(c.Params, gin.Param{Key: "id", Value: "vishnu"})
+				c.Params = append(c.Params, gin.Param{Key: "id", Value: "surya"})
 				c.Request = httpReq
 
 				return c, rr, nil
@@ -438,21 +438,18 @@ func Test_handler_ProcessJobApplication(t *testing.T) {
 			setup: func() (*gin.Context, *httptest.ResponseRecorder, service.Service) {
 				rr := httptest.NewRecorder()
 				c, _ := gin.CreateTestContext(rr)
-				requestBody := []byte(`{"key": "value"}`)
-				httpReq, _ := http.NewRequest(http.MethodGet, "http://google.com:8080", bytes.NewBuffer(requestBody))
+				// requestBody := []byte(``)
+				httpReq, _ := http.NewRequest(http.MethodPost, "http://google.com:8080", bytes.NewBufferString(`[indcbcusv`))
 				ctx := httpReq.Context()
 				ctx = context.WithValue(ctx, middleware.TraceIdKey, "693")
 				httpReq = httpReq.WithContext(ctx)
-				c.Params = append(c.Params, gin.Param{Key: "id", Value: "1"})
+				//c.Params = append(c.Params, gin.Param{Key: "id", Value: "1"})
 				c.Request = httpReq
 
 				return c, rr, nil
 			},
 			expectedStatusCode: http.StatusInternalServerError,
 			expectedResponse:   `{"error":"Internal Server Error"}`,
-		},
-		{
-			
 		},
 	}
 	for _, tt := range tests {

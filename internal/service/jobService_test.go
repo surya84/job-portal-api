@@ -9,6 +9,8 @@ import (
 	"testing"
 
 	gomock "go.uber.org/mock/gomock"
+	"gopkg.in/go-playground/assert.v1"
+	"gorm.io/gorm"
 )
 
 func TestNewService_CreateJob(t *testing.T) {
@@ -152,6 +154,9 @@ func TestNewService_ViewJob(t *testing.T) {
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewService.ViewJob() = %v, want %v", got, tt.want)
 			}
+
+			assert.Equal(t, tt.want, tt.mockRepoResponse)
+			assert.Equal()
 		})
 	}
 
@@ -302,63 +307,307 @@ func TestNewService_ViewJobByCompanyId(t *testing.T) {
 func TestNewService_ProcessJob(t *testing.T) {
 	type args struct {
 		ctx context.Context
-		id  int
-		nj  models.ApplicationRequest
+		nj  []models.ApplicationRequest
 	}
 	tests := []struct {
-		name             string
-		r                NewService
-		args             args
-		want             models.ApplicationRequest
-		wantErr          bool
-		mockRepoResponse func() (models.Job, error)
+		name    string
+		r       NewService
+		args    args
+		want    []models.ApplicationRequest
+		wantErr bool
+		setup   func(mockRepo *repository.MockRepository)
 	}{
 		{
-			name: "error in db",
+			name: "error case",
 			args: args{
 				ctx: context.Background(),
-				id:  12,
-				nj:  models.ApplicationRequest{},
+				nj: []models.ApplicationRequest{
+
+					//budget fail case
+					{
+						Name:           "surya",
+						Id:             3,
+						Title:          "java developer",
+						NoticePeriod:   30,
+						Budget:         2500000,
+						Experience:     3.5,
+						Qualifications: []uint{1, 2},
+						Shifts:         []uint{1, 2, 3},
+						JobTypes:       []uint{1, 2},
+						Locations:      []uint{1, 2},
+						Technologies:   []uint{1, 2},
+						WorkModes:      []uint{1, 2},
+					},
+					{
+						Name:           "teja",
+						Id:             4,
+						Title:          "data science",
+						NoticePeriod:   30,
+						Budget:         25000,
+						Experience:     3.5,
+						Qualifications: []uint{1, 2},
+						Shifts:         []uint{1, 2, 3},
+						JobTypes:       []uint{1, 2},
+						Locations:      []uint{1, 2},
+						Technologies:   []uint{1, 2},
+						WorkModes:      []uint{1, 2},
+					},
+
+					//notice period fail case
+					{
+						Name:           "Ram",
+						Id:             2,
+						Title:          "data science",
+						NoticePeriod:   1000,
+						Budget:         25000,
+						Experience:     3.5,
+						Qualifications: []uint{1, 2},
+						Shifts:         []uint{1, 2, 3},
+						JobTypes:       []uint{1, 2},
+						Locations:      []uint{1, 2},
+						Technologies:   []uint{1, 2},
+						WorkModes:      []uint{1, 2},
+					},
+
+					//experience fail case
+					{
+						Name:           "Lucky",
+						Id:             5,
+						Title:          "C developer",
+						NoticePeriod:   30,
+						Budget:         25000,
+						Experience:     1.2,
+						Qualifications: []uint{1, 2},
+						Shifts:         []uint{1, 2, 3},
+						JobTypes:       []uint{1, 2},
+						Locations:      []uint{1, 2},
+						Technologies:   []uint{1, 2},
+						WorkModes:      []uint{1, 2},
+					},
+				},
 			},
-			want: models.ApplicationRequest{},
-			mockRepoResponse: func() (models.Job, error) {
-				return models.Job{}, errors.New("error in fetching data")
+			want:    nil,
+			wantErr: false,
+			setup: func(mockRepo *repository.MockRepository) {
+				mockRepo.EXPECT().GetJobProcessData(3).Return(models.Job{
+					Model:              gorm.Model{ID: 2},
+					Title:              "java developer",
+					Min_NoticePeriod:   10,
+					Max_NoticePeriod:   40,
+					Budget:             25090,
+					Description:        "java development",
+					Minimum_Experience: 2.5,
+					Maximum_Experience: 5.5,
+					Qualifications: []models.Qualification{
+						{Model: gorm.Model{ID: 2}},
+					},
+					Shifts: []models.Shift{
+						{Model: gorm.Model{ID: 2}},
+					},
+					JobTypes: []models.JobType{
+						{Model: gorm.Model{ID: 2}},
+					},
+
+					Locations: []models.Location{
+						{Model: gorm.Model{ID: 2}},
+					},
+					Technologies: []models.Technology{
+						{Model: gorm.Model{ID: 2}},
+					},
+					WorkModes: []models.WorkMode{
+						{Model: gorm.Model{ID: 2}},
+					},
+				}, nil).Times(1)
+				mockRepo.EXPECT().GetJobProcessData(4).Return(models.Job{
+
+					Model:              gorm.Model{ID: 4},
+					Title:              " data science",
+					Min_NoticePeriod:   10,
+					Max_NoticePeriod:   40,
+					Budget:             25090,
+					Description:        "work on data sets",
+					Minimum_Experience: 2.5,
+					Maximum_Experience: 5.5,
+					Qualifications: []models.Qualification{
+						{Model: gorm.Model{ID: 4}},
+					},
+					Shifts: []models.Shift{
+						{Model: gorm.Model{ID: 4}},
+					},
+					JobTypes: []models.JobType{
+						{Model: gorm.Model{ID: 4}},
+					},
+
+					Locations: []models.Location{
+						{Model: gorm.Model{ID: 4}},
+					},
+					Technologies: []models.Technology{
+						{Model: gorm.Model{ID: 4}},
+					},
+					WorkModes: []models.WorkMode{
+						{Model: gorm.Model{ID: 4}},
+					},
+				}, nil).Times(1)
+
+				mockRepo.EXPECT().GetJobProcessData(2).Return(models.Job{
+
+					Model:              gorm.Model{ID: 2},
+					Title:              " data science",
+					Min_NoticePeriod:   30,
+					Max_NoticePeriod:   60,
+					Budget:             25090,
+					Description:        "work on data sets",
+					Minimum_Experience: 2.5,
+					Maximum_Experience: 5.5,
+					Qualifications: []models.Qualification{
+						{Model: gorm.Model{ID: 2}},
+					},
+					Shifts: []models.Shift{
+						{Model: gorm.Model{ID: 2}},
+					},
+					JobTypes: []models.JobType{
+						{Model: gorm.Model{ID: 2}},
+					},
+
+					Locations: []models.Location{
+						{Model: gorm.Model{ID: 2}},
+					},
+					Technologies: []models.Technology{
+						{Model: gorm.Model{ID: 2}},
+					},
+					WorkModes: []models.WorkMode{
+						{Model: gorm.Model{ID: 2}},
+					},
+				}, nil).Times(1)
+
+				mockRepo.EXPECT().GetJobProcessData(5).Return(models.Job{
+
+					Model:              gorm.Model{ID: 5},
+					Title:              "C developer",
+					Min_NoticePeriod:   30,
+					Max_NoticePeriod:   40,
+					Budget:             25090,
+					Description:        "work on data sets",
+					Minimum_Experience: 2.5,
+					Maximum_Experience: 5.5,
+					Qualifications: []models.Qualification{
+						{Model: gorm.Model{ID: 5}},
+					},
+					Shifts: []models.Shift{
+						{Model: gorm.Model{ID: 5}},
+					},
+					JobTypes: []models.JobType{
+						{Model: gorm.Model{ID: 5}},
+					},
+
+					Locations: []models.Location{
+						{Model: gorm.Model{ID: 5}},
+					},
+					Technologies: []models.Technology{
+						{Model: gorm.Model{ID: 5}},
+					},
+					WorkModes: []models.WorkMode{
+						{Model: gorm.Model{ID: 5}},
+					},
+				}, nil).Times(1)
 			},
-			wantErr: true,
 		},
-		// {
-		// 	name: "success",
-		// 	args: args{
-		// 		ctx: context.Background(),
-		// 		id:  12,
-		// 		nj:  models.ApplicationRequest{},
-		// 	},
-		// 	want: models.ApplicationRequest{},
-		// 	mockRepoResponse: func() (models.Job, error) {
-		// 		return models.Job{}, errors.New("error in fetching data")
-		// 	},
-		// 	wantErr: false,
-		// },
+
 		{
-			name: "request not accepted",
+			name: "success",
 			args: args{
 				ctx: context.Background(),
-				id:  12,
-				nj:  models.ApplicationRequest{},
+				nj: []models.ApplicationRequest{
+
+					{
+						Name:           "surya",
+						Id:             3,
+						Title:          "java developer",
+						NoticePeriod:   20,
+						Budget:         25000,
+						Experience:     3.5,
+						Qualifications: []uint{1, 2},
+						Shifts:         []uint{1, 2, 3},
+						JobTypes:       []uint{1, 2, 3},
+						Locations:      []uint{1, 2, 3},
+						Technologies:   []uint{1, 2, 3},
+						WorkModes:      []uint{1, 2, 3},
+					},
+					{
+						Name:           "teja",
+						Id:             10,
+						Title:          "java developer",
+						NoticePeriod:   30,
+						Budget:         2500000,
+						Experience:     3.5,
+						Qualifications: []uint{1, 2},
+						Shifts:         []uint{1, 2, 3},
+						JobTypes:       []uint{1, 2},
+						Locations:      []uint{1, 2},
+						Technologies:   []uint{1, 2},
+						WorkModes:      []uint{1, 2},
+					},
+				},
 			},
-			want: models.ApplicationRequest{},
+			want: []models.ApplicationRequest{
+				{
+					Name:           "surya",
+					Id:             3,
+					Title:          "java developer",
+					NoticePeriod:   20,
+					Budget:         25000,
+					Experience:     3.5,
+					Qualifications: []uint{1, 2},
+					Shifts:         []uint{1, 2, 3},
+					JobTypes:       []uint{1, 2, 3},
+					Locations:      []uint{1, 2, 3},
+					Technologies:   []uint{1, 2, 3},
+					WorkModes:      []uint{1, 2, 3},
+				},
+			},
+			wantErr: false,
+			setup: func(mockRepo *repository.MockRepository) {
+				mockRepo.EXPECT().GetJobProcessData(10).Return(models.Job{}, errors.New("no data found for job id")).Times(1)
+				mockRepo.EXPECT().GetJobProcessData(3).Return(models.Job{
+					Model:              gorm.Model{ID: 3},
+					Title:              "java developer",
+					Min_NoticePeriod:   20,
+					Max_NoticePeriod:   30,
+					Budget:             85000,
+					Description:        "java development",
+					Minimum_Experience: 2.5,
+					Maximum_Experience: 5.5,
+					Qualifications: []models.Qualification{
+						{Model: gorm.Model{ID: 3}},
+					},
+					Shifts: []models.Shift{
+						{Model: gorm.Model{ID: 3}},
+					},
+					JobTypes: []models.JobType{
+						{Model: gorm.Model{ID: 3}},
+					},
+					Locations: []models.Location{
+						{Model: gorm.Model{ID: 3}},
+					},
+					Technologies: []models.Technology{
+						{Model: gorm.Model{ID: 3}},
+					},
+					WorkModes: []models.WorkMode{
+						{Model: gorm.Model{ID: 3}},
+					},
+				}, nil).Times(1)
+			},
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ms := gomock.NewController(t)
-			mockRepo := repository.NewMockRepository(ms)
 
-			if tt.mockRepoResponse != nil {
-				mockRepo.EXPECT().GetJobProcessData(tt.args.id).Return(tt.mockRepoResponse()).AnyTimes()
-			}
+			mc := gomock.NewController(t)
+			mockRepo := repository.NewMockRepository(mc)
+			tt.setup(mockRepo)
 			s := NewServiceStore(mockRepo)
-			got, err := s.ProcessJob(tt.args.ctx, tt.args.id, tt.args.nj)
+			got, err := s.ProcessJob(tt.args.ctx, tt.args.nj)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewService.ProcessJob() error = %v, wantErr %v", err, tt.wantErr)
 				return

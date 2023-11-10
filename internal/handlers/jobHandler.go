@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"job-portal/internal/middleware"
 	"job-portal/internal/models"
 	"net/http"
@@ -63,6 +64,7 @@ func (h *handler) ViewJobs(c *gin.Context) {
 	if !ok {
 		log.Error().Msg("traceId missing from context")
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": http.StatusText(http.StatusInternalServerError)})
+
 		return
 	}
 
@@ -83,7 +85,9 @@ func (h *handler) ViewJobById(c *gin.Context) {
 	traceId, ok := ctx.Value(middleware.TraceIdKey).(string)
 	if !ok {
 		log.Error().Msg("traceId missing from context")
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": http.StatusText(http.StatusInternalServerError)})
+		c.AbortWithStatusJSON(http.StatusInternalServerError,
+			gin.H{"error": http.StatusText(http.StatusInternalServerError)})
+
 		return
 	}
 
@@ -94,16 +98,11 @@ func (h *handler) ViewJobById(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad Request"})
 		return
 	}
-
-	// Call the service layer to get company information
 	job, err := h.s.GetJobInfoByID(ctx, jId)
 	if err != nil {
-		// Handle errors, e.g., company not found
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
-	// Return the company data as JSON response
 	c.JSON(http.StatusOK, job)
 }
 func (h *handler) ViewJobByCompany(c *gin.Context) {
@@ -123,15 +122,13 @@ func (h *handler) ViewJobByCompany(c *gin.Context) {
 		return
 	}
 
-	// Call the service layer to get company information
 	jobs, err := h.s.ViewJobByCompanyId(ctx, cId)
 	if err != nil {
-		// Handle errors, e.g., company not found
+
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Return the company data as JSON response
 	c.JSON(http.StatusOK, jobs)
 }
 
@@ -145,10 +142,12 @@ func (h *handler) ProcessJobApplication(c *gin.Context) {
 		return
 	}
 
+	fmt.Println("///////////////////////////")
 	var newApplication []models.ApplicationRequest
 	err := json.NewDecoder(c.Request.Body).Decode(&newApplication)
+	fmt.Println("[[[[[[[[[[[[[[]]]]]]]]]]]]]]", newApplication)
 	if err != nil {
-		log.Info().Msg("error while converting request body to json")
+		log.Error().Msg("error while converting requested body to json")
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": http.StatusText(http.StatusInternalServerError)})
 		return
 	}

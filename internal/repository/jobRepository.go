@@ -8,22 +8,22 @@ import (
 	"gorm.io/gorm"
 )
 
-func (s *Conn) CreateJ(ctx context.Context, nj models.NewJobRequest, cId int) (models.Job, error) {
+func (s *Conn) CreateJ(ctx context.Context, newJob models.NewJobRequest, cId int) (models.NewJobResponse, error) {
 
 	job := models.Job{
-		Title:              nj.Title,
-		Description:        nj.Description,
-		Min_NoticePeriod:   nj.Min_NoticePeriod,
-		Max_NoticePeriod:   nj.Max_NoticePeriod,
-		Budget:             nj.Budget,
-		Minimum_Experience: nj.Minimum_Experience,
-		Maximum_Experience: nj.Maximum_Experience,
+		Title:              newJob.Title,
+		Description:        newJob.Description,
+		Min_NoticePeriod:   *newJob.Min_NoticePeriod,
+		Max_NoticePeriod:   *newJob.Max_NoticePeriod,
+		Budget:             newJob.Budget,
+		Minimum_Experience: newJob.Minimum_Experience,
+		Maximum_Experience: newJob.Maximum_Experience,
 		CompanyId:          uint(cId),
 	}
 
-	//job.Locations = getLocations(nj.Locations)
+	//job.Locations = getLocations(newJob.Locations)
 
-	for _, v := range nj.Qualifications {
+	for _, v := range newJob.Qualifications {
 		tempData := models.Qualification{
 			Model: gorm.Model{
 				ID: v,
@@ -32,7 +32,7 @@ func (s *Conn) CreateJ(ctx context.Context, nj models.NewJobRequest, cId int) (m
 		job.Qualifications = append(job.Qualifications, tempData)
 	}
 
-	for _, v := range nj.Locations {
+	for _, v := range newJob.Locations {
 		tempData := models.Location{
 			Model: gorm.Model{
 				ID: v,
@@ -40,7 +40,7 @@ func (s *Conn) CreateJ(ctx context.Context, nj models.NewJobRequest, cId int) (m
 		}
 		job.Locations = append(job.Locations, tempData)
 	}
-	for _, v := range nj.Shifts {
+	for _, v := range newJob.Shifts {
 		tempData := models.Shift{
 			Model: gorm.Model{
 				ID: v,
@@ -48,7 +48,7 @@ func (s *Conn) CreateJ(ctx context.Context, nj models.NewJobRequest, cId int) (m
 		}
 		job.Shifts = append(job.Shifts, tempData)
 	}
-	for _, v := range nj.Technologies {
+	for _, v := range newJob.Technologies {
 		tempData := models.Technology{
 			Model: gorm.Model{
 				ID: v,
@@ -57,7 +57,7 @@ func (s *Conn) CreateJ(ctx context.Context, nj models.NewJobRequest, cId int) (m
 		job.Technologies = append(job.Technologies, tempData)
 	}
 
-	for _, v := range nj.JobTypes {
+	for _, v := range newJob.JobTypes {
 		tempData := models.JobType{
 			Model: gorm.Model{
 				ID: v,
@@ -66,7 +66,7 @@ func (s *Conn) CreateJ(ctx context.Context, nj models.NewJobRequest, cId int) (m
 		job.JobTypes = append(job.JobTypes, tempData)
 	}
 
-	for _, v := range nj.WorkModes {
+	for _, v := range newJob.WorkModes {
 		tempData := models.WorkMode{
 			Model: gorm.Model{
 				ID: v,
@@ -78,10 +78,14 @@ func (s *Conn) CreateJ(ctx context.Context, nj models.NewJobRequest, cId int) (m
 	tx := s.db.WithContext(ctx).Create(&job)
 
 	if tx.Error != nil {
-		return models.Job{}, errors.New("creation of job failed")
+		return models.NewJobResponse{}, errors.New("creation of job failed")
 	}
 
-	return job, nil
+	jobId := models.NewJobResponse{
+		ID: job.ID,
+	}
+
+	return jobId, nil
 }
 
 // func getLocations(locationIds []models.Application) (locationData []models.) {

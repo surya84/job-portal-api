@@ -121,24 +121,16 @@ func TestNewService_Authenticate(t *testing.T) {
 				password: "1234",
 			},
 			want: jwt.RegisteredClaims{
-				ID:        "123",
-				Issuer:    "user",
-				Subject:   "login",
-				Audience:  jwt.GetAlgorithms(),
-				ExpiresAt: &jwt.NumericDate{},
-				NotBefore: &jwt.NumericDate{},
-				IssuedAt:  &jwt.NumericDate{},
+				ID:      "123",
+				Issuer:  "user",
+				Subject: "login",
 			},
 
 			mockRepoResponse: func() (jwt.RegisteredClaims, error) {
 				return jwt.RegisteredClaims{
-					ID:        "123",
-					Issuer:    "user",
-					Subject:   "login",
-					Audience:  jwt.GetAlgorithms(),
-					ExpiresAt: &jwt.NumericDate{},
-					NotBefore: &jwt.NumericDate{},
-					IssuedAt:  &jwt.NumericDate{},
+					ID:      "123",
+					Issuer:  "user",
+					Subject: "login",
 				}, nil
 			},
 			wantErr: false,

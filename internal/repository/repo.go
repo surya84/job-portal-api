@@ -19,7 +19,7 @@ type Conn struct {
 type Repository interface {
 	CreateU(ctx context.Context, nu models.NewUser) (models.User, error)
 	AuthenticateUser(ctx context.Context, email string, password string) (jwt.RegisteredClaims, error)
-	CreateJ(ctx context.Context, nj models.NewJobRequest, cId int) (models.Job, error)
+	CreateJ(ctx context.Context, nj models.NewJobRequest, cId int) (models.NewJobResponse, error)
 	ViewJobs() ([]models.Job, error)
 	GetJobById(jId int) (models.Job, error)
 	ViewJobById(cId int) ([]models.Job, error)

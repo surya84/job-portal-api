@@ -9,89 +9,104 @@ import (
 	"testing"
 
 	gomock "go.uber.org/mock/gomock"
-	"gopkg.in/go-playground/assert.v1"
 	"gorm.io/gorm"
 )
 
-func TestNewService_CreateJob(t *testing.T) {
-	type args struct {
-		ctx context.Context
-		nj  models.NewJobRequest
-		cId int
-	}
-	tests := []struct {
-		name string
-		//r                NewService
-		args             args
-		want             models.Job
-		wantErr          bool
-		mockRepoResponse func() (models.Job, error)
-	}{
-		{
-			name: "error in creating job",
-			args: args{
-				ctx: context.Background(),
-				nj: models.NewJobRequest{
-					Title:       "software developer",
-					Description: "develop mobile applications",
-					//CompanyID:   24,
-				},
-			},
-			want: models.Job{},
-			mockRepoResponse: func() (models.Job, error) {
-				return models.Job{}, errors.New("error in creating job")
-			},
-			wantErr: true,
-		},
+// func TestNewService_CreateJob(t *testing.T) {
+// 	type args struct {
+// 		ctx    context.Context
+// 		newJob models.NewJobRequest
+// 		cId    int
+// 	}
+// 	tests := []struct {
+// 		name string
+// 		//r                NewService
+// 		args             args
+// 		want             models.NewJobResponse
+// 		wantErr          bool
+// 		mockRepoResponse func() (models.NewJobResponse, error)
+// 	}{
+// 		{
+// 			name: "error in creating job",
+// 			args: args{
+// 				ctx: context.Background(),
+// 				newJob: models.NewJobRequest{
+// 					Title:              "java developer",
+// 					Min_NoticePeriod:   20,
+// 					Max_NoticePeriod:   40,
+// 					Budget:             25000,
+// 					Description:        "java development",
+// 					Minimum_Experience: 2.2,
+// 					Maximum_Experience: 5.5,
+// 					Qualifications:     []uint{1, 2},
+// 					Shifts:             []uint{1, 2, 3},
+// 					JobTypes:           []uint{1, 2},
+// 					Locations:          []uint{1, 2},
+// 					Technologies:       []uint{1, 2, 3},
+// 					WorkModes:          []uint{1, 2},
+// 				},
+// 			},
+// 			want: models.NewJobResponse{},
+// 			mockRepoResponse: func() (models.NewJobResponse, error) {
+// 				return models.NewJobResponse{}, errors.New("error in creating job")
+// 			},
+// 			wantErr: true,
+// 		},
 
-		{
-			name: "success",
-			args: args{
-				ctx: context.Background(),
+// 		{
+// 			name: "success",
+// 			args: args{
+// 				ctx: context.Background(),
 
-				nj: models.NewJobRequest{
-					Title:       "software developer",
-					Description: "develop mobile applications",
-					//CompanyID:   24,
-				},
-			},
+// 				newJob: models.NewJobRequest{
+// 					Title:              "java developer",
+// 					Min_NoticePeriod:   20,
+// 					Max_NoticePeriod:   40,
+// 					Budget:             25000,
+// 					Description:        "java development",
+// 					Minimum_Experience: 2.2,
+// 					Maximum_Experience: 5.5,
+// 					Qualifications:     []uint{1, 2},
+// 					Shifts:             []uint{1, 2, 3},
+// 					JobTypes:           []uint{1, 2},
+// 					Locations:          []uint{1, 2},
+// 					Technologies:       []uint{1, 2, 3},
+// 					WorkModes:          []uint{1, 2},
+// 				},
+// 			},
 
-			want: models.Job{
-				Title:       "software developer",
-				Description: "develop mobile applications",
-				//CompanyID:   24,
-			},
+// 			want: models.NewJobResponse{
+// 				ID: uint(2),
+// 			},
 
-			mockRepoResponse: func() (models.Job, error) {
-				return models.Job{
-					Title:       "software developer",
-					Description: "develop mobile applications",
-					//CompanyID:   24,
-				}, nil
-			},
-			wantErr: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			mc := gomock.NewController(t)
-			mockRepo := repository.NewMockRepository(mc)
-			if tt.mockRepoResponse != nil {
-				mockRepo.EXPECT().CreateJ(tt.args.ctx, tt.args.nj, tt.args.cId).Return(tt.mockRepoResponse()).AnyTimes()
-			}
+// 			mockRepoResponse: func() (models.NewJobResponse, error) {
+// 				return models.NewJobResponse{
+// 					ID: uint(2),
+// 				}, nil
+// 			},
+// 			wantErr: false,
+// 		},
+// 	}
+// 	for _, tt := range tests {
+// 		t.Run(tt.name, func(t *testing.T) {
+// 			mc := gomock.NewController(t)
+// 			mockRepo := repository.NewMockRepository(mc)
+// 			if tt.mockRepoResponse != nil {
+// 				mockRepo.EXPECT().CreateJ(tt.args.ctx, tt.args.newJob, tt.args.cId).Return(tt.mockRepoResponse()).AnyTimes()
+// 			}
 
-			s := NewServiceStore(mockRepo)
-			got, err := s.CreateJob(tt.args.ctx, tt.args.nj, tt.args.cId)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("NewService.CreateJob() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewService.CreateJob() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
+// 			s := NewServiceStore(mockRepo)
+// 			got, err := s.CreateJob(tt.args.ctx, tt.args.newJob, tt.args.cId)
+// 			if (err != nil) != tt.wantErr {
+// 				t.Errorf("NewService.CreateJob() error = %v, wantErr %v", err, tt.wantErr)
+// 				return
+// 			}
+// 			if !reflect.DeepEqual(got, tt.want) {
+// 				t.Errorf("NewService.CreateJob() = %v, want %v", got, tt.want)
+// 			}
+// 		})
+// 	}
+// }
 
 func TestNewService_ViewJob(t *testing.T) {
 	type args struct {
@@ -155,8 +170,8 @@ func TestNewService_ViewJob(t *testing.T) {
 				t.Errorf("NewService.ViewJob() = %v, want %v", got, tt.want)
 			}
 
-			assert.Equal(t, tt.want, tt.mockRepoResponse)
-			assert.Equal()
+			// assert.Equal(t, tt.want, got)
+			// assert.Equal(t, tt.wantErr, err)
 		})
 	}
 
@@ -261,7 +276,7 @@ func TestNewService_ViewJobByCompanyId(t *testing.T) {
 				cId: 12,
 			},
 			want: []models.Job{
-				models.Job{
+				{
 					Title:       "software developer",
 					Description: "develop mobile apps",
 					//CompanyID:   12,
@@ -270,7 +285,7 @@ func TestNewService_ViewJobByCompanyId(t *testing.T) {
 
 			mockRepoResponse: func() ([]models.Job, error) {
 				return []models.Job{
-					models.Job{
+					{
 						Title:       "software developer",
 						Description: "develop mobile apps",
 						//CompanyID:   12,
@@ -306,8 +321,8 @@ func TestNewService_ViewJobByCompanyId(t *testing.T) {
 
 func TestNewService_ProcessJob(t *testing.T) {
 	type args struct {
-		ctx context.Context
-		nj  []models.ApplicationRequest
+		ctx    context.Context
+		newJob []models.ApplicationRequest
 	}
 	tests := []struct {
 		name    string
@@ -321,14 +336,14 @@ func TestNewService_ProcessJob(t *testing.T) {
 			name: "error case",
 			args: args{
 				ctx: context.Background(),
-				nj: []models.ApplicationRequest{
+				newJob: []models.ApplicationRequest{
 
 					//budget fail case
 					{
 						Name:           "surya",
 						Id:             3,
 						Title:          "java developer",
-						NoticePeriod:   30,
+						NoticePeriod:   intPtr(30),
 						Budget:         2500000,
 						Experience:     3.5,
 						Qualifications: []uint{1, 2},
@@ -342,7 +357,7 @@ func TestNewService_ProcessJob(t *testing.T) {
 						Name:           "teja",
 						Id:             4,
 						Title:          "data science",
-						NoticePeriod:   30,
+						NoticePeriod:   intPtr(30),
 						Budget:         25000,
 						Experience:     3.5,
 						Qualifications: []uint{1, 2},
@@ -358,7 +373,7 @@ func TestNewService_ProcessJob(t *testing.T) {
 						Name:           "Ram",
 						Id:             2,
 						Title:          "data science",
-						NoticePeriod:   1000,
+						NoticePeriod:   intPtr(1000),
 						Budget:         25000,
 						Experience:     3.5,
 						Qualifications: []uint{1, 2},
@@ -374,7 +389,7 @@ func TestNewService_ProcessJob(t *testing.T) {
 						Name:           "Lucky",
 						Id:             5,
 						Title:          "C developer",
-						NoticePeriod:   30,
+						NoticePeriod:   intPtr(30),
 						Budget:         25000,
 						Experience:     1.2,
 						Qualifications: []uint{1, 2},
@@ -517,13 +532,13 @@ func TestNewService_ProcessJob(t *testing.T) {
 			name: "success",
 			args: args{
 				ctx: context.Background(),
-				nj: []models.ApplicationRequest{
+				newJob: []models.ApplicationRequest{
 
 					{
 						Name:           "surya",
 						Id:             3,
 						Title:          "java developer",
-						NoticePeriod:   20,
+						NoticePeriod:   intPtr(20),
 						Budget:         25000,
 						Experience:     3.5,
 						Qualifications: []uint{1, 2},
@@ -537,7 +552,7 @@ func TestNewService_ProcessJob(t *testing.T) {
 						Name:           "teja",
 						Id:             10,
 						Title:          "java developer",
-						NoticePeriod:   30,
+						NoticePeriod:   intPtr(30),
 						Budget:         2500000,
 						Experience:     3.5,
 						Qualifications: []uint{1, 2},
@@ -554,7 +569,7 @@ func TestNewService_ProcessJob(t *testing.T) {
 					Name:           "surya",
 					Id:             3,
 					Title:          "java developer",
-					NoticePeriod:   20,
+					NoticePeriod:   intPtr(20),
 					Budget:         25000,
 					Experience:     3.5,
 					Qualifications: []uint{1, 2},
@@ -607,7 +622,7 @@ func TestNewService_ProcessJob(t *testing.T) {
 			mockRepo := repository.NewMockRepository(mc)
 			tt.setup(mockRepo)
 			s := NewServiceStore(mockRepo)
-			got, err := s.ProcessJob(tt.args.ctx, tt.args.nj)
+			got, err := s.ProcessJob(tt.args.ctx, tt.args.newJob)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewService.ProcessJob() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -617,4 +632,105 @@ func TestNewService_ProcessJob(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestNewService_CreateJob(t *testing.T) {
+	type args struct {
+		ctx    context.Context
+		newJob models.NewJobRequest
+		cId    int
+	}
+	tests := []struct {
+		name             string
+		r                NewService
+		args             args
+		want             models.NewJobResponse
+		wantErr          bool
+		mockRepoResponse func() (models.NewJobResponse, error)
+	}{
+		{
+			name: "error in creating job",
+			args: args{
+				ctx: context.Background(),
+				newJob: models.NewJobRequest{
+					Title:              "java developer",
+					Min_NoticePeriod:   intPtr(20),
+					Max_NoticePeriod:   intPtr(40),
+					Budget:             25000,
+					Description:        "java development",
+					Minimum_Experience: 2.2,
+					Maximum_Experience: 5.5,
+					Qualifications:     []uint{1, 2},
+					Shifts:             []uint{1, 2, 3},
+					JobTypes:           []uint{1, 2},
+					Locations:          []uint{1, 2},
+					Technologies:       []uint{1, 2, 3},
+					WorkModes:          []uint{1, 2},
+				},
+			},
+			want: models.NewJobResponse{},
+			mockRepoResponse: func() (models.NewJobResponse, error) {
+				return models.NewJobResponse{}, errors.New("error in creating job")
+			},
+			wantErr: true,
+		},
+
+		{
+			name: "success",
+			args: args{
+				ctx: context.Background(),
+
+				newJob: models.NewJobRequest{
+					Title:              "java developer",
+					Min_NoticePeriod:   intPtr(20),
+					Max_NoticePeriod:   intPtr(40),
+					Budget:             25000,
+					Description:        "java development",
+					Minimum_Experience: 2.2,
+					Maximum_Experience: 5.5,
+					Qualifications:     []uint{1, 2},
+					Shifts:             []uint{1, 2, 3},
+					JobTypes:           []uint{1, 2},
+					Locations:          []uint{1, 2},
+					Technologies:       []uint{1, 2, 3},
+					WorkModes:          []uint{1, 2},
+				},
+			},
+
+			want: models.NewJobResponse{
+				ID: uint(2),
+			},
+
+			mockRepoResponse: func() (models.NewJobResponse, error) {
+				return models.NewJobResponse{
+					ID: uint(2),
+				}, nil
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			mc := gomock.NewController(t)
+			mockRepo := repository.NewMockRepository(mc)
+
+			if tt.mockRepoResponse != nil {
+				mockRepo.EXPECT().CreateJ(gomock.Any(), gomock.Any(), gomock.Any()).Return(tt.mockRepoResponse()).AnyTimes()
+			}
+			s := NewServiceStore(mockRepo)
+			got, err := s.CreateJob(tt.args.ctx, tt.args.newJob, tt.args.cId)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewService.CreateJob() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewService.CreateJob() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func intPtr(i int) *int {
+	return &i
 }

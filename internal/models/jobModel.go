@@ -55,8 +55,8 @@ type WorkMode struct {
 
 type NewJobRequest struct {
 	Title              string  `json:"title"`
-	Min_NoticePeriod   int     `json:"min_np" validate:"required"`
-	Max_NoticePeriod   int     `json:"max_np" validate:"required"`
+	Min_NoticePeriod   *int    `json:"min_np" validate:"required"`
+	Max_NoticePeriod   *int    `json:"max_np" validate:"required"`
 	Budget             float64 `json:"budget" validate:"required"`
 	Description        string  `json:"description" validate:"required"`
 	Minimum_Experience float64 `json:"min_exp" validate:"required"`
@@ -78,7 +78,7 @@ type ApplicationRequest struct {
 	Name           string  `json:"name"`
 	Id             int     `json:"id"`
 	Title          string  `json:"title"`
-	NoticePeriod   int     `json:"noticePeriod" validate:"required"`
+	NoticePeriod   *int    `json:"noticePeriod" validate:"required"`
 	Budget         float64 `json:"budget" validate:"required"`
 	Experience     float64 `json:"min_exp"`
 	Qualifications []uint  `gorm:"many2many:job_qualifications;"`

@@ -9,8 +9,8 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (r NewService) CreateJob(ctx context.Context, nj models.NewJobRequest, cId int) (models.NewJobResponse, error) {
-	jobData, err := r.rp.CreateJ(ctx, nj, cId)
+func (r NewService) CreateJob(ctx context.Context, newJob models.NewJobRequest, cId int) (models.NewJobResponse, error) {
+	jobData, err := r.rp.CreateJ(ctx, newJob, cId)
 	if err != nil {
 		return models.NewJobResponse{}, err
 	}
@@ -44,17 +44,17 @@ func (r NewService) ViewJobByCompanyId(ctx context.Context, cId int) ([]models.J
 	return jobDetails, err
 }
 
-func Compare(nj models.ApplicationRequest, job models.Job) (models.ApplicationRequest, error) {
+func Compare(newJob models.ApplicationRequest, job models.Job) (models.ApplicationRequest, error) {
 
 	//fmt.Println("entering into compare function")
 	var count int
 	err := errors.New("")
-	if nj.Budget > job.Budget {
+	if newJob.Budget > job.Budget {
 
 		return models.ApplicationRequest{}, err
 	}
 
-	if nj.NoticePeriod >= job.Min_NoticePeriod && nj.NoticePeriod <= job.Max_NoticePeriod {
+	if *newJob.NoticePeriod >= job.Min_NoticePeriod && *newJob.NoticePeriod <= job.Max_NoticePeriod {
 
 		//log.Info().Str("Min_NP", "true").Send()
 		count++
@@ -63,7 +63,7 @@ func Compare(nj models.ApplicationRequest, job models.Job) (models.ApplicationRe
 		return models.ApplicationRequest{}, err
 	}
 
-	if nj.Experience < job.Minimum_Experience {
+	if newJob.Experience < job.Minimum_Experience {
 
 		return models.ApplicationRequest{}, err
 
@@ -74,7 +74,7 @@ func Compare(nj models.ApplicationRequest, job models.Job) (models.ApplicationRe
 	for _, v := range job.Locations {
 		loc_job = append(loc_job, v.ID)
 	}
-	loc_app = nj.Locations
+	loc_app = newJob.Locations
 	if sliceContainsAtLeastOne(loc_job, loc_app) {
 		count++
 	}
@@ -85,7 +85,7 @@ func Compare(nj models.ApplicationRequest, job models.Job) (models.ApplicationRe
 	for _, v := range job.Technologies {
 		tech_job = append(tech_job, v.ID)
 	}
-	tech_app = nj.Technologies
+	tech_app = newJob.Technologies
 	if sliceContainsAtLeastOne(tech_job, tech_app) {
 		count++
 	}
@@ -96,7 +96,7 @@ func Compare(nj models.ApplicationRequest, job models.Job) (models.ApplicationRe
 	for _, v := range job.WorkModes {
 		mode_job = append(mode_job, v.ID)
 	}
-	mode_app = nj.WorkModes
+	mode_app = newJob.WorkModes
 	if sliceContainsAtLeastOne(mode_job, mode_app) {
 		count++
 	}
@@ -107,7 +107,7 @@ func Compare(nj models.ApplicationRequest, job models.Job) (models.ApplicationRe
 	for _, v := range job.Qualifications {
 		q_job = append(q_job, v.ID)
 	}
-	q_app = nj.Qualifications
+	q_app = newJob.Qualifications
 	if sliceContainsAtLeastOne(q_job, q_app) {
 		count++
 	}
@@ -118,7 +118,7 @@ func Compare(nj models.ApplicationRequest, job models.Job) (models.ApplicationRe
 	for _, v := range job.Shifts {
 		shift_job = append(shift_job, v.ID)
 	}
-	shift_app = nj.Shifts
+	shift_app = newJob.Shifts
 	if sliceContainsAtLeastOne(shift_job, shift_app) {
 
 		count++
@@ -130,13 +130,13 @@ func Compare(nj models.ApplicationRequest, job models.Job) (models.ApplicationRe
 	for _, v := range job.JobTypes {
 		type_job = append(type_job, v.ID)
 	}
-	type_app = nj.JobTypes
+	type_app = newJob.JobTypes
 	if sliceContainsAtLeastOne(type_job, type_app) {
 		count++
 	}
 
 	if count >= 4 {
-		return nj, nil
+		return newJob, nil
 	}
 
 	return models.ApplicationRequest{}, err
@@ -155,11 +155,11 @@ func sliceContainsAtLeastOne(slice, subSlice []uint) bool {
 
 }
 
-func (r NewService) ProcessJob(ctx context.Context, nj []models.ApplicationRequest) ([]models.ApplicationRequest, error) {
+func (r NewService) ProcessJob(ctx context.Context, newJob []models.ApplicationRequest) ([]models.ApplicationRequest, error) {
 
 	var wg sync.WaitGroup
-	userChannel := make(chan models.ApplicationRequest, len(nj))
-	for _, application := range nj {
+	userChannel := make(chan models.ApplicationRequest, len(newJob))
+	for _, application := range newJob {
 		wg.Add(1)
 		go func(application models.ApplicationRequest) {
 			defer wg.Done()
@@ -177,7 +177,7 @@ func (r NewService) ProcessJob(ctx context.Context, nj []models.ApplicationReque
 				return
 			}
 
-			// response, err := compare(nj, job)
+			// response, err := compare(newJob, job)
 			// if err != nil {
 			// 	return []models.ApplicationRequest{}, err
 			// }

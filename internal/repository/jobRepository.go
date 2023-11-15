@@ -113,7 +113,7 @@ func (s *Conn) ViewJobs() ([]models.Job, error) {
 }
 func (s *Conn) GetJobById(jId int) (models.Job, error) {
 	var job models.Job
-	tx := s.db.Where("ID = ?", jId)
+	tx := s.db.Preload("Locations").Preload("Qualifications").Preload("Locations").Preload("Shifts").Preload("Technologies").Preload("WorkModes").Preload("JobTypes").Where("ID = ?", jId)
 	err := tx.Find(&job).Error
 	if err != nil {
 		return models.Job{}, errors.New("company not found")
@@ -123,7 +123,7 @@ func (s *Conn) GetJobById(jId int) (models.Job, error) {
 func (s *Conn) ViewJobById(cId int) ([]models.Job, error) {
 	var jobs []models.Job
 
-	tx := s.db.Where("company_id =?", cId)
+	tx := s.db.Preload("Locations").Preload("Qualifications").Preload("Locations").Preload("Shifts").Preload("Technologies").Preload("WorkModes").Preload("JobTypes").Where("company_id =?", cId)
 	err := tx.Find(&jobs).Error
 
 	if err != nil {

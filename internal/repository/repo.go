@@ -28,6 +28,8 @@ type Repository interface {
 	GetCompanyByID(uid int) (models.Company, error)
 
 	GetJobProcessData(id int) (models.Job, error)
+
+	GetDataFromRedis(jid uint)
 }
 
 func NewRepo(db *gorm.DB) (Repository, error) {

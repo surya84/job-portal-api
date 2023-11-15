@@ -132,18 +132,324 @@ func TestNewService_ViewJob(t *testing.T) {
 			name: "success",
 			want: []models.Job{
 				{
-					Title:       "software developer",
-					Description: "develop mobile applications",
-					//CompanyID:   24,
+					Model: gorm.Model{
+						ID: 1,
+					},
+					Title:              "software",
+					Min_NoticePeriod:   12,
+					Max_NoticePeriod:   3,
+					Budget:             23542345,
+					Description:        "jeriojgiorejhgioejgoi",
+					Minimum_Experience: 3,
+					Maximum_Experience: 2,
+					Qualifications: []models.Qualification{
+						{
+							Model: gorm.Model{
+								ID: 1,
+							},
+							Name: "dsjhfhsifh",
+						},
+						{
+							Model: gorm.Model{
+								ID: 2,
+							},
+							Name: "hnurhiushf",
+						},
+					},
+					Shifts: []models.Shift{
+						{
+							Model: gorm.Model{
+								ID: 1,
+							},
+							Name: "nbfduihfiuehf",
+						},
+						{
+							Model: gorm.Model{
+								ID: 2,
+							},
+							Name: "fregfrgreg",
+						},
+					},
+					JobTypes: []models.JobType{
+						{
+							Model: gorm.Model{
+								ID: 1,
+							},
+							Name: "fdsdrrrgv",
+						},
+					},
+					Locations: []models.Location{
+						{
+							Model: gorm.Model{
+								ID: 2,
+							},
+							Name: "terffefred",
+						},
+					},
+					Technologies: []models.Technology{
+						{
+							Model: gorm.Model{
+								ID: 1,
+							},
+							Name: "vrfefr",
+						},
+						{
+							Model: gorm.Model{
+								ID: 2,
+							},
+							Name: "fdgaegaergr",
+						},
+					},
+					WorkModes: []models.WorkMode{
+						{
+							Model: gorm.Model{
+								ID: 2,
+							},
+							Name: "rgdargg",
+						},
+					},
+					CompanyId: 1,
+				},
+				{
+					Model: gorm.Model{
+						ID: 2,
+					},
+					Title:              "hardware",
+					Min_NoticePeriod:   12,
+					Max_NoticePeriod:   3,
+					Budget:             458347589,
+					Description:        "hhsdhd",
+					Minimum_Experience: 3,
+					Maximum_Experience: 2,
+					Qualifications: []models.Qualification{
+						{
+							Model: gorm.Model{
+								ID: 1,
+							},
+							Name: "dsjhfhsifh",
+						},
+						{
+							Model: gorm.Model{
+								ID: 2,
+							},
+							Name: "hnurhiushf",
+						},
+					},
+					Shifts: []models.Shift{
+						{
+							Model: gorm.Model{
+								ID: 1,
+							},
+							Name: "nbfduihfiuehf",
+						},
+					},
+					JobTypes: []models.JobType{
+						{
+							Model: gorm.Model{
+								ID: 1,
+							},
+							Name: "fdsdrrrgv",
+						},
+						{
+							Model: gorm.Model{
+								ID: 2,
+							},
+							Name: "vfgrdfrs",
+						},
+					},
+					Locations: []models.Location{
+						{
+							Model: gorm.Model{
+								ID: 2,
+							},
+							Name: "terffefred",
+						},
+					},
+					Technologies: []models.Technology{
+						{
+							Model: gorm.Model{
+								ID: 1,
+							},
+							Name: "vrfefr",
+						},
+						{
+							Model: gorm.Model{
+								ID: 2,
+							},
+							Name: "fdgaegaergr",
+						},
+					},
+					WorkModes: []models.WorkMode{
+						{
+							Model: gorm.Model{
+								ID: 2,
+							},
+							Name: "rgdargg",
+						},
+					},
+					CompanyId: 2,
 				},
 			},
 
 			mockRepoResponse: func() ([]models.Job, error) {
 				return []models.Job{
 					{
-						Title:       "software developer",
-						Description: "develop mobile applications",
-						//CompanyID:   24,
+						Model: gorm.Model{
+							ID: 1,
+						},
+						Title:              "software",
+						Min_NoticePeriod:   12,
+						Max_NoticePeriod:   3,
+						Budget:             23542345,
+						Description:        "jeriojgiorejhgioejgoi",
+						Minimum_Experience: 3,
+						Maximum_Experience: 2,
+						Qualifications: []models.Qualification{
+							{
+								Model: gorm.Model{
+									ID: 1,
+								},
+								Name: "dsjhfhsifh",
+							},
+							{
+								Model: gorm.Model{
+									ID: 2,
+								},
+								Name: "hnurhiushf",
+							},
+						},
+						Shifts: []models.Shift{
+							{
+								Model: gorm.Model{
+									ID: 1,
+								},
+								Name: "nbfduihfiuehf",
+							},
+							{
+								Model: gorm.Model{
+									ID: 2,
+								},
+								Name: "fregfrgreg",
+							},
+						},
+						JobTypes: []models.JobType{
+							{
+								Model: gorm.Model{
+									ID: 1,
+								},
+								Name: "fdsdrrrgv",
+							},
+						},
+						Locations: []models.Location{
+							{
+								Model: gorm.Model{
+									ID: 2,
+								},
+								Name: "terffefred",
+							},
+						},
+						Technologies: []models.Technology{
+							{
+								Model: gorm.Model{
+									ID: 1,
+								},
+								Name: "vrfefr",
+							},
+							{
+								Model: gorm.Model{
+									ID: 2,
+								},
+								Name: "fdgaegaergr",
+							},
+						},
+						WorkModes: []models.WorkMode{
+							{
+								Model: gorm.Model{
+									ID: 2,
+								},
+								Name: "rgdargg",
+							},
+						},
+						CompanyId: 1,
+					},
+					{
+						Model: gorm.Model{
+							ID: 2,
+						},
+						Title:              "hardware",
+						Min_NoticePeriod:   12,
+						Max_NoticePeriod:   3,
+						Budget:             458347589,
+						Description:        "hhsdhd",
+						Minimum_Experience: 3,
+						Maximum_Experience: 2,
+						Qualifications: []models.Qualification{
+							{
+								Model: gorm.Model{
+									ID: 1,
+								},
+								Name: "dsjhfhsifh",
+							},
+							{
+								Model: gorm.Model{
+									ID: 2,
+								},
+								Name: "hnurhiushf",
+							},
+						},
+						Shifts: []models.Shift{
+							{
+								Model: gorm.Model{
+									ID: 1,
+								},
+								Name: "nbfduihfiuehf",
+							},
+						},
+						JobTypes: []models.JobType{
+							{
+								Model: gorm.Model{
+									ID: 1,
+								},
+								Name: "fdsdrrrgv",
+							},
+							{
+								Model: gorm.Model{
+									ID: 2,
+								},
+								Name: "vfgrdfrs",
+							},
+						},
+						Locations: []models.Location{
+							{
+								Model: gorm.Model{
+									ID: 2,
+								},
+								Name: "terffefred",
+							},
+						},
+						Technologies: []models.Technology{
+							{
+								Model: gorm.Model{
+									ID: 1,
+								},
+								Name: "vrfefr",
+							},
+							{
+								Model: gorm.Model{
+									ID: 2,
+								},
+								Name: "fdgaegaergr",
+							},
+						},
+						WorkModes: []models.WorkMode{
+							{
+								Model: gorm.Model{
+									ID: 2,
+								},
+								Name: "rgdargg",
+							},
+						},
+						CompanyId: 2,
 					},
 				}, nil
 			},
@@ -207,13 +513,163 @@ func TestNewService_GetJobInfoByID(t *testing.T) {
 				jId: 12,
 			},
 			want: models.Job{
-				Title:       "software developer",
-				Description: "mobile application developemt",
+				Model: gorm.Model{
+					ID: 12,
+				},
+				Title:              "software",
+				Min_NoticePeriod:   12,
+				Max_NoticePeriod:   3,
+				Budget:             23542345,
+				Description:        "jeriojgiorejhgioejgoi",
+				Minimum_Experience: 3,
+				Maximum_Experience: 2,
+				Qualifications: []models.Qualification{
+					{
+						Model: gorm.Model{
+							ID: 1,
+						},
+						Name: "dsjhfhsifh",
+					},
+					{
+						Model: gorm.Model{
+							ID: 2,
+						},
+						Name: "hnurhiushf",
+					},
+				},
+				Shifts: []models.Shift{
+					{
+						Model: gorm.Model{
+							ID: 1,
+						},
+						Name: "nbfduihfiuehf",
+					},
+					{
+						Model: gorm.Model{
+							ID: 2,
+						},
+						Name: "fregfrgreg",
+					},
+				},
+				JobTypes: []models.JobType{
+					{
+						Model: gorm.Model{
+							ID: 1,
+						},
+						Name: "fdsdrrrgv",
+					},
+				},
+				Locations: []models.Location{
+					{
+						Model: gorm.Model{
+							ID: 2,
+						},
+						Name: "terffefred",
+					},
+				},
+				Technologies: []models.Technology{
+					{
+						Model: gorm.Model{
+							ID: 1,
+						},
+						Name: "vrfefr",
+					},
+					{
+						Model: gorm.Model{
+							ID: 2,
+						},
+						Name: "fdgaegaergr",
+					},
+				},
+				WorkModes: []models.WorkMode{
+					{
+						Model: gorm.Model{
+							ID: 2,
+						},
+						Name: "rgdargg",
+					},
+				},
+				CompanyId: 1,
 			},
 			mockRepoResponse: func() (models.Job, error) {
 				return models.Job{
-					Title:       "software developer",
-					Description: "mobile application developemt",
+					Model: gorm.Model{
+						ID: 12,
+					},
+					Title:              "software",
+					Min_NoticePeriod:   12,
+					Max_NoticePeriod:   3,
+					Budget:             23542345,
+					Description:        "jeriojgiorejhgioejgoi",
+					Minimum_Experience: 3,
+					Maximum_Experience: 2,
+					Qualifications: []models.Qualification{
+						{
+							Model: gorm.Model{
+								ID: 1,
+							},
+							Name: "dsjhfhsifh",
+						},
+						{
+							Model: gorm.Model{
+								ID: 2,
+							},
+							Name: "hnurhiushf",
+						},
+					},
+					Shifts: []models.Shift{
+						{
+							Model: gorm.Model{
+								ID: 1,
+							},
+							Name: "nbfduihfiuehf",
+						},
+						{
+							Model: gorm.Model{
+								ID: 2,
+							},
+							Name: "fregfrgreg",
+						},
+					},
+					JobTypes: []models.JobType{
+						{
+							Model: gorm.Model{
+								ID: 1,
+							},
+							Name: "fdsdrrrgv",
+						},
+					},
+					Locations: []models.Location{
+						{
+							Model: gorm.Model{
+								ID: 2,
+							},
+							Name: "terffefred",
+						},
+					},
+					Technologies: []models.Technology{
+						{
+							Model: gorm.Model{
+								ID: 1,
+							},
+							Name: "vrfefr",
+						},
+						{
+							Model: gorm.Model{
+								ID: 2,
+							},
+							Name: "fdgaegaergr",
+						},
+					},
+					WorkModes: []models.WorkMode{
+						{
+							Model: gorm.Model{
+								ID: 2,
+							},
+							Name: "rgdargg",
+						},
+					},
+					CompanyId: 1,
 				}, nil
 			},
 			wantErr: false,
@@ -277,18 +733,324 @@ func TestNewService_ViewJobByCompanyId(t *testing.T) {
 			},
 			want: []models.Job{
 				{
-					Title:       "software developer",
-					Description: "develop mobile apps",
-					//CompanyID:   12,
+					Model: gorm.Model{
+						ID: 1,
+					},
+					Title:              "software",
+					Min_NoticePeriod:   12,
+					Max_NoticePeriod:   3,
+					Budget:             23542345,
+					Description:        "jeriojgiorejhgioejgoi",
+					Minimum_Experience: 3,
+					Maximum_Experience: 2,
+					Qualifications: []models.Qualification{
+						{
+							Model: gorm.Model{
+								ID: 1,
+							},
+							Name: "dsjhfhsifh",
+						},
+						{
+							Model: gorm.Model{
+								ID: 2,
+							},
+							Name: "hnurhiushf",
+						},
+					},
+					Shifts: []models.Shift{
+						{
+							Model: gorm.Model{
+								ID: 1,
+							},
+							Name: "nbfduihfiuehf",
+						},
+						{
+							Model: gorm.Model{
+								ID: 2,
+							},
+							Name: "fregfrgreg",
+						},
+					},
+					JobTypes: []models.JobType{
+						{
+							Model: gorm.Model{
+								ID: 1,
+							},
+							Name: "fdsdrrrgv",
+						},
+					},
+					Locations: []models.Location{
+						{
+							Model: gorm.Model{
+								ID: 2,
+							},
+							Name: "terffefred",
+						},
+					},
+					Technologies: []models.Technology{
+						{
+							Model: gorm.Model{
+								ID: 1,
+							},
+							Name: "vrfefr",
+						},
+						{
+							Model: gorm.Model{
+								ID: 2,
+							},
+							Name: "fdgaegaergr",
+						},
+					},
+					WorkModes: []models.WorkMode{
+						{
+							Model: gorm.Model{
+								ID: 2,
+							},
+							Name: "rgdargg",
+						},
+					},
+					CompanyId: 12,
+				},
+				{
+					Model: gorm.Model{
+						ID: 12,
+					},
+					Title:              "hardware",
+					Min_NoticePeriod:   12,
+					Max_NoticePeriod:   3,
+					Budget:             458347589,
+					Description:        "hhsdhd",
+					Minimum_Experience: 3,
+					Maximum_Experience: 2,
+					Qualifications: []models.Qualification{
+						{
+							Model: gorm.Model{
+								ID: 1,
+							},
+							Name: "dsjhfhsifh",
+						},
+						{
+							Model: gorm.Model{
+								ID: 2,
+							},
+							Name: "hnurhiushf",
+						},
+					},
+					Shifts: []models.Shift{
+						{
+							Model: gorm.Model{
+								ID: 1,
+							},
+							Name: "nbfduihfiuehf",
+						},
+					},
+					JobTypes: []models.JobType{
+						{
+							Model: gorm.Model{
+								ID: 1,
+							},
+							Name: "fdsdrrrgv",
+						},
+						{
+							Model: gorm.Model{
+								ID: 2,
+							},
+							Name: "vfgrdfrs",
+						},
+					},
+					Locations: []models.Location{
+						{
+							Model: gorm.Model{
+								ID: 2,
+							},
+							Name: "terffefred",
+						},
+					},
+					Technologies: []models.Technology{
+						{
+							Model: gorm.Model{
+								ID: 1,
+							},
+							Name: "vrfefr",
+						},
+						{
+							Model: gorm.Model{
+								ID: 2,
+							},
+							Name: "fdgaegaergr",
+						},
+					},
+					WorkModes: []models.WorkMode{
+						{
+							Model: gorm.Model{
+								ID: 2,
+							},
+							Name: "rgdargg",
+						},
+					},
+					CompanyId: 12,
 				},
 			},
 
 			mockRepoResponse: func() ([]models.Job, error) {
 				return []models.Job{
 					{
-						Title:       "software developer",
-						Description: "develop mobile apps",
-						//CompanyID:   12,
+						Model: gorm.Model{
+							ID: 1,
+						},
+						Title:              "software",
+						Min_NoticePeriod:   12,
+						Max_NoticePeriod:   3,
+						Budget:             23542345,
+						Description:        "jeriojgiorejhgioejgoi",
+						Minimum_Experience: 3,
+						Maximum_Experience: 2,
+						Qualifications: []models.Qualification{
+							{
+								Model: gorm.Model{
+									ID: 1,
+								},
+								Name: "dsjhfhsifh",
+							},
+							{
+								Model: gorm.Model{
+									ID: 2,
+								},
+								Name: "hnurhiushf",
+							},
+						},
+						Shifts: []models.Shift{
+							{
+								Model: gorm.Model{
+									ID: 1,
+								},
+								Name: "nbfduihfiuehf",
+							},
+							{
+								Model: gorm.Model{
+									ID: 2,
+								},
+								Name: "fregfrgreg",
+							},
+						},
+						JobTypes: []models.JobType{
+							{
+								Model: gorm.Model{
+									ID: 1,
+								},
+								Name: "fdsdrrrgv",
+							},
+						},
+						Locations: []models.Location{
+							{
+								Model: gorm.Model{
+									ID: 2,
+								},
+								Name: "terffefred",
+							},
+						},
+						Technologies: []models.Technology{
+							{
+								Model: gorm.Model{
+									ID: 1,
+								},
+								Name: "vrfefr",
+							},
+							{
+								Model: gorm.Model{
+									ID: 2,
+								},
+								Name: "fdgaegaergr",
+							},
+						},
+						WorkModes: []models.WorkMode{
+							{
+								Model: gorm.Model{
+									ID: 2,
+								},
+								Name: "rgdargg",
+							},
+						},
+						CompanyId: 12,
+					},
+					{
+						Model: gorm.Model{
+							ID: 12,
+						},
+						Title:              "hardware",
+						Min_NoticePeriod:   12,
+						Max_NoticePeriod:   3,
+						Budget:             458347589,
+						Description:        "hhsdhd",
+						Minimum_Experience: 3,
+						Maximum_Experience: 2,
+						Qualifications: []models.Qualification{
+							{
+								Model: gorm.Model{
+									ID: 1,
+								},
+								Name: "dsjhfhsifh",
+							},
+							{
+								Model: gorm.Model{
+									ID: 2,
+								},
+								Name: "hnurhiushf",
+							},
+						},
+						Shifts: []models.Shift{
+							{
+								Model: gorm.Model{
+									ID: 1,
+								},
+								Name: "nbfduihfiuehf",
+							},
+						},
+						JobTypes: []models.JobType{
+							{
+								Model: gorm.Model{
+									ID: 1,
+								},
+								Name: "fdsdrrrgv",
+							},
+							{
+								Model: gorm.Model{
+									ID: 2,
+								},
+								Name: "vfgrdfrs",
+							},
+						},
+						Locations: []models.Location{
+							{
+								Model: gorm.Model{
+									ID: 2,
+								},
+								Name: "terffefred",
+							},
+						},
+						Technologies: []models.Technology{
+							{
+								Model: gorm.Model{
+									ID: 1,
+								},
+								Name: "vrfefr",
+							},
+							{
+								Model: gorm.Model{
+									ID: 2,
+								},
+								Name: "fdgaegaergr",
+							},
+						},
+						WorkModes: []models.WorkMode{
+							{
+								Model: gorm.Model{
+									ID: 2,
+								},
+								Name: "rgdargg",
+							},
+						},
+						CompanyId: 12,
 					},
 				}, nil
 			},

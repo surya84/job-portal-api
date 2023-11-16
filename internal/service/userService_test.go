@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"job-portal/internal/models"
+	rediscache "job-portal/internal/redisCache"
 	"job-portal/internal/repository"
 	"reflect"
 	"testing"
@@ -69,11 +70,13 @@ func TestNewService_CreateUser(t *testing.T) {
 
 			mc := gomock.NewController(t)
 			mockRepo := repository.NewMockRepository(mc)
+			mockCache := rediscache.NewMockCache(mc)
+
 			if tt.mockRepoResponse != nil {
 				mockRepo.EXPECT().CreateU(tt.args.ctx, tt.args.nu).Return(tt.mockRepoResponse()).AnyTimes()
 			}
 
-			s := NewServiceStore(mockRepo)
+			s := NewServiceStore(mockRepo, mockCache)
 			got, err := s.CreateUser(tt.args.ctx, tt.args.nu)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewService.CreateUser() error = %v, wantErr %v", err, tt.wantErr)
@@ -141,11 +144,13 @@ func TestNewService_Authenticate(t *testing.T) {
 
 			mc := gomock.NewController(t)
 			ms := repository.NewMockRepository(mc)
+			mockCache := rediscache.NewMockCache(mc)
+
 			if tt.mockRepoResponse != nil {
 				ms.EXPECT().AuthenticateUser(tt.args.ctx, tt.args.email, tt.args.password).Return(tt.mockRepoResponse()).AnyTimes()
 			}
 
-			s := NewServiceStore(ms)
+			s := NewServiceStore(ms, mockCache)
 			got, err := s.Authenticate(tt.args.ctx, tt.args.email, tt.args.password)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewService.Authenticate() error = %v, wantErr %v", err, tt.wantErr)

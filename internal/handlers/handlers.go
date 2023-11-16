@@ -3,6 +3,7 @@ package handlers
 import (
 	"job-portal/internal/auth"
 	"job-portal/internal/middleware"
+	rediscache "job-portal/internal/redisCache"
 	"job-portal/internal/repository"
 	"job-portal/internal/service"
 
@@ -10,12 +11,12 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func API(a *auth.Auth, c repository.Repository) *gin.Engine {
+func API(a *auth.Auth, c repository.Repository, redis rediscache.Cache) *gin.Engine {
 
 	r := gin.New()
-
+	
 	m, err := middleware.NewMid(a)
-	s := service.NewServiceStore(c)
+	s := service.NewServiceStore(c, redis)
 	h := handler{
 		a: a,
 		s: s,

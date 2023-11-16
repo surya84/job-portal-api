@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"job-portal/internal/models"
+	rediscache "job-portal/internal/redisCache"
 	"job-portal/internal/repository"
 	"reflect"
 	"testing"
@@ -11,102 +12,6 @@ import (
 	gomock "go.uber.org/mock/gomock"
 	"gorm.io/gorm"
 )
-
-// func TestNewService_CreateJob(t *testing.T) {
-// 	type args struct {
-// 		ctx    context.Context
-// 		newJob models.NewJobRequest
-// 		cId    int
-// 	}
-// 	tests := []struct {
-// 		name string
-// 		//r                NewService
-// 		args             args
-// 		want             models.NewJobResponse
-// 		wantErr          bool
-// 		mockRepoResponse func() (models.NewJobResponse, error)
-// 	}{
-// 		{
-// 			name: "error in creating job",
-// 			args: args{
-// 				ctx: context.Background(),
-// 				newJob: models.NewJobRequest{
-// 					Title:              "java developer",
-// 					Min_NoticePeriod:   20,
-// 					Max_NoticePeriod:   40,
-// 					Budget:             25000,
-// 					Description:        "java development",
-// 					Minimum_Experience: 2.2,
-// 					Maximum_Experience: 5.5,
-// 					Qualifications:     []uint{1, 2},
-// 					Shifts:             []uint{1, 2, 3},
-// 					JobTypes:           []uint{1, 2},
-// 					Locations:          []uint{1, 2},
-// 					Technologies:       []uint{1, 2, 3},
-// 					WorkModes:          []uint{1, 2},
-// 				},
-// 			},
-// 			want: models.NewJobResponse{},
-// 			mockRepoResponse: func() (models.NewJobResponse, error) {
-// 				return models.NewJobResponse{}, errors.New("error in creating job")
-// 			},
-// 			wantErr: true,
-// 		},
-
-// 		{
-// 			name: "success",
-// 			args: args{
-// 				ctx: context.Background(),
-
-// 				newJob: models.NewJobRequest{
-// 					Title:              "java developer",
-// 					Min_NoticePeriod:   20,
-// 					Max_NoticePeriod:   40,
-// 					Budget:             25000,
-// 					Description:        "java development",
-// 					Minimum_Experience: 2.2,
-// 					Maximum_Experience: 5.5,
-// 					Qualifications:     []uint{1, 2},
-// 					Shifts:             []uint{1, 2, 3},
-// 					JobTypes:           []uint{1, 2},
-// 					Locations:          []uint{1, 2},
-// 					Technologies:       []uint{1, 2, 3},
-// 					WorkModes:          []uint{1, 2},
-// 				},
-// 			},
-
-// 			want: models.NewJobResponse{
-// 				ID: uint(2),
-// 			},
-
-// 			mockRepoResponse: func() (models.NewJobResponse, error) {
-// 				return models.NewJobResponse{
-// 					ID: uint(2),
-// 				}, nil
-// 			},
-// 			wantErr: false,
-// 		},
-// 	}
-// 	for _, tt := range tests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			mc := gomock.NewController(t)
-// 			mockRepo := repository.NewMockRepository(mc)
-// 			if tt.mockRepoResponse != nil {
-// 				mockRepo.EXPECT().CreateJ(tt.args.ctx, tt.args.newJob, tt.args.cId).Return(tt.mockRepoResponse()).AnyTimes()
-// 			}
-
-// 			s := NewServiceStore(mockRepo)
-// 			got, err := s.CreateJob(tt.args.ctx, tt.args.newJob, tt.args.cId)
-// 			if (err != nil) != tt.wantErr {
-// 				t.Errorf("NewService.CreateJob() error = %v, wantErr %v", err, tt.wantErr)
-// 				return
-// 			}
-// 			if !reflect.DeepEqual(got, tt.want) {
-// 				t.Errorf("NewService.CreateJob() = %v, want %v", got, tt.want)
-// 			}
-// 		})
-// 	}
-// }
 
 func TestNewService_ViewJob(t *testing.T) {
 	type args struct {
@@ -460,12 +365,13 @@ func TestNewService_ViewJob(t *testing.T) {
 
 			mc := gomock.NewController(t)
 			mockRepo := repository.NewMockRepository(mc)
+			mockCache := rediscache.NewMockCache(mc)
 			if tt.mockRepoResponse != nil {
 				mockRepo.EXPECT().ViewJobs().Return(tt.mockRepoResponse()).AnyTimes()
 
 			}
 
-			s := NewServiceStore(mockRepo)
+			s := NewServiceStore(mockRepo, mockCache)
 
 			got, err := s.ViewJob(tt.args.ctx)
 			if (err != nil) != tt.wantErr {
@@ -681,12 +587,13 @@ func TestNewService_GetJobInfoByID(t *testing.T) {
 
 			mc := gomock.NewController(t)
 			mockRepo := repository.NewMockRepository(mc)
+			mockCache := rediscache.NewMockCache(mc)
 
 			if tt.mockRepoResponse != nil {
 				mockRepo.EXPECT().GetJobById(tt.args.jId).Return(tt.mockRepoResponse()).AnyTimes()
 			}
 
-			s := NewServiceStore(mockRepo)
+			s := NewServiceStore(mockRepo, mockCache)
 			got, err := s.GetJobInfoByID(tt.args.ctx, tt.args.jId)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewService.GetJobInfoByID() error = %v, wantErr %v", err, tt.wantErr)
@@ -1064,11 +971,12 @@ func TestNewService_ViewJobByCompanyId(t *testing.T) {
 			mc := gomock.NewController(t)
 
 			mockRepo := repository.NewMockRepository(mc)
+			mockCache := rediscache.NewMockCache(mc)
 
 			if tt.mockRepoResponse != nil {
 				mockRepo.EXPECT().ViewJobById(tt.args.cId).Return(tt.mockRepoResponse()).AnyTimes()
 			}
-			s := NewServiceStore(mockRepo)
+			s := NewServiceStore(mockRepo, mockCache)
 			got, err := s.ViewJobByCompanyId(tt.args.ctx, tt.args.cId)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewService.ViewJobByCompanyId() error = %v, wantErr %v", err, tt.wantErr)
@@ -1087,12 +995,13 @@ func TestNewService_ProcessJob(t *testing.T) {
 		newJob []models.ApplicationRequest
 	}
 	tests := []struct {
-		name    string
-		r       NewService
-		args    args
-		want    []models.ApplicationRequest
-		wantErr bool
-		setup   func(mockRepo *repository.MockRepository)
+		name       string
+		r          NewService
+		args       args
+		want       []models.ApplicationRequest
+		wantErr    bool
+		setup      func(mockRepo *repository.MockRepository)
+		setupCache func(mockCache *rediscache.MockCache)
 	}{
 		{
 			name: "error case",
@@ -1382,8 +1291,11 @@ func TestNewService_ProcessJob(t *testing.T) {
 
 			mc := gomock.NewController(t)
 			mockRepo := repository.NewMockRepository(mc)
+			mockCache := rediscache.NewMockCache(mc)
+
 			tt.setup(mockRepo)
-			s := NewServiceStore(mockRepo)
+			tt.setupCache(mockCache)
+			s := NewServiceStore(mockRepo, mockCache)
 			got, err := s.ProcessJob(tt.args.ctx, tt.args.newJob)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewService.ProcessJob() error = %v, wantErr %v", err, tt.wantErr)
@@ -1476,11 +1388,12 @@ func TestNewService_CreateJob(t *testing.T) {
 
 			mc := gomock.NewController(t)
 			mockRepo := repository.NewMockRepository(mc)
+			mockCache := rediscache.NewMockCache(mc)
 
 			if tt.mockRepoResponse != nil {
 				mockRepo.EXPECT().CreateJ(gomock.Any(), gomock.Any(), gomock.Any()).Return(tt.mockRepoResponse()).AnyTimes()
 			}
-			s := NewServiceStore(mockRepo)
+			s := NewServiceStore(mockRepo, mockCache)
 			got, err := s.CreateJob(tt.args.ctx, tt.args.newJob, tt.args.cId)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewService.CreateJob() error = %v, wantErr %v", err, tt.wantErr)

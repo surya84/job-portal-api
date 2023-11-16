@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"job-portal/internal/models"
+	rediscache "job-portal/internal/redisCache"
 	"job-portal/internal/repository"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -10,6 +11,8 @@ import (
 
 type NewService struct {
 	rp repository.Repository
+	//redis *redis.Client
+	rdb rediscache.Cache
 }
 
 //go:generate mockgen -source=service.go -destination=service_mock.go -package=service
@@ -28,6 +31,10 @@ type Service interface {
 	//Compare(nj models.ApplicationRequest, job models.Job) (models.ApplicationRequest, error)
 }
 
-func NewServiceStore(s repository.Repository) Service {
-	return &NewService{rp: s}
+func NewServiceStore(s repository.Repository, r rediscache.Cache) Service {
+	return &NewService{rp: s, rdb: r}
 }
+
+// func NewServiceRedis(r *redis.Client) Service {
+// 	return &NewService{redis: r}
+// }

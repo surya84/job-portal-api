@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"job-portal/internal/models"
+	rediscache "job-portal/internal/redisCache"
 	"job-portal/internal/repository"
 	"reflect"
 	"testing"
@@ -70,12 +71,13 @@ func TestNewService_CreateCompany(t *testing.T) {
 
 			mc := gomock.NewController(t)
 			mockRepo := repository.NewMockRepository(mc)
+			//mockCache := rediscache.NewMockCache(mc)
 
 			if tt.mockRepoResponse != nil {
 				mockRepo.EXPECT().CreateC(tt.args.ctx, tt.args.ni).Return(tt.mockRepoResponse()).AnyTimes()
 			}
 
-			s := NewServiceStore(mockRepo)
+			s := NewServiceStore(mockRepo, nil)
 
 			got, err := s.CreateCompany(tt.args.ctx, tt.args.ni)
 			if (err != nil) != tt.wantErr {
@@ -135,12 +137,13 @@ func TestNewService_ViewCompany(t *testing.T) {
 			mc := gomock.NewController(t)
 
 			mockRepo := repository.NewMockRepository(mc)
+			mockCache := rediscache.NewMockCache(mc)
 
 			if tt.mockRepoResponse != nil {
 				mockRepo.EXPECT().ViewCompanies().Return(tt.mockRepoResponse())
 			}
 
-			s := NewServiceStore(mockRepo)
+			s := NewServiceStore(mockRepo, mockCache)
 
 			got, err := s.ViewCompany(tt.args.ctx)
 			if (err != nil) != tt.wantErr {
@@ -203,11 +206,12 @@ func TestNewService_GetCompanyInfoByID(t *testing.T) {
 
 			mc := gomock.NewController(t)
 			mockRepo := repository.NewMockRepository(mc)
+			mockCache := rediscache.NewMockCache(mc)
 
 			if tt.mockRepoResponse != nil {
 				mockRepo.EXPECT().GetCompanyByID(tt.args.uid).Return(tt.mockRepoResponse()).AnyTimes()
 			}
-			s := NewServiceStore(mockRepo)
+			s := NewServiceStore(mockRepo, mockCache)
 			got, err := s.GetCompanyInfoByID(tt.args.ctx, tt.args.uid)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewService.GetCompanyInfoByID() error = %v, wantErr %v", err, tt.wantErr)

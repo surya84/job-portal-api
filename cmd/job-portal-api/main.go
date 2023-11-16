@@ -7,6 +7,7 @@ import (
 	"job-portal/internal/auth"
 	"job-portal/internal/database"
 	"job-portal/internal/handlers"
+	rediscache "job-portal/internal/redisCache"
 	"job-portal/internal/repository"
 	"net/http"
 	"os"
@@ -72,6 +73,9 @@ func startApp() error {
 	if err != nil {
 		return fmt.Errorf("database is not connected: %w ", err)
 	}
+	////Initializing redis conn
+	rdb := rediscache.RedisClient()
+	redisLayer := rediscache.NewredisConnection(rdb)
 
 	// =========================================================================
 	//Initialize Conn layer support
@@ -79,6 +83,10 @@ func startApp() error {
 	if err != nil {
 		return err
 	}
+
+	// redis := rediscache.RedisClient()
+	// redisConn := service.NewServiceRedis(redis)
+
 	//repo := repository.NewRepo(ms)
 
 	// Initialize http service
@@ -87,7 +95,7 @@ func startApp() error {
 		ReadTimeout:  8000 * time.Second,
 		WriteTimeout: 800 * time.Second,
 		IdleTimeout:  800 * time.Second,
-		Handler:      handlers.API(a, ms),
+		Handler:      handlers.API(a, ms, redisLayer),
 	}
 
 	// channel to store any errors while setting up the service

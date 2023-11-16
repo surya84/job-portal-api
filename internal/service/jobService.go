@@ -2,10 +2,15 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"job-portal/internal/models"
+	rediscache "job-portal/internal/redisCache"
+	"strconv"
 	"sync"
+	"time"
 
+	"github.com/go-redis/redis"
 	"github.com/rs/zerolog/log"
 )
 
@@ -158,6 +163,7 @@ func sliceContainsAtLeastOne(slice, subSlice []uint) bool {
 func (r NewService) ProcessJob(ctx context.Context, newJob []models.ApplicationRequest) ([]models.ApplicationRequest, error) {
 
 	var wg sync.WaitGroup
+	rd := rediscache.RedisClient()
 	userChannel := make(chan models.ApplicationRequest, len(newJob))
 	for _, application := range newJob {
 		wg.Add(1)
@@ -165,24 +171,32 @@ func (r NewService) ProcessJob(ctx context.Context, newJob []models.ApplicationR
 			defer wg.Done()
 			jid := application.Id
 
-			job, err := r.rp.GetJobProcessData(jid)
+			key := strconv.Itoa(jid)
 
+			jobDetails, err := CheckRedisKey(rd, key)
 			if err != nil {
-				return
+				jobDataFromDb, err := r.rp.GetJobProcessData(jid)
+
+				if err != nil {
+					return
+				}
+
+				SetRedisKey(rd, key, jobDataFromDb)
+				jobDetails = jobDataFromDb
+
 			}
 
-			user, err := Compare(application, job)
+			// job, err := r.rp.GetJobProcessData(jid)
 
-			if err != nil {
-				return
-			}
-
-			// response, err := compare(newJob, job)
 			// if err != nil {
-			// 	return []models.ApplicationRequest{}, err
+			// 	return
 			// }
 
-			// result = append(result, response)
+			user, err := Compare(application, jobDetails)
+
+			if err != nil {
+				return
+			}
 
 			userChannel <- user
 		}(application)
@@ -200,4 +214,34 @@ func (r NewService) ProcessJob(ctx context.Context, newJob []models.ApplicationR
 	}
 
 	return users, nil
+}
+
+func CheckRedisKey(rdb *redis.Client, key string) (models.Job, error) {
+	//fmt.Println("9999999999")
+
+	val, err := rdb.Get(key).Result()
+	if err == redis.Nil {
+		return models.Job{}, err
+	}
+	var job models.Job
+	err = json.Unmarshal([]byte(val), &job)
+	if err != nil {
+		log.Err(err)
+	}
+	return job, nil
+}
+
+func SetRedisKey(rdb *redis.Client, key string, jobData models.Job) {
+	//fmt.Println("121111111111111111111111111")
+	jobdata, err := json.Marshal(jobData)
+	if err != nil {
+		log.Err(err)
+		return
+	}
+	data := string(jobdata)
+	err = rdb.Set(key, data, 10*time.Minute).Err()
+	if err != nil {
+		log.Err(err)
+		return
+	}
 }

@@ -86,3 +86,18 @@
     "technologies": [1, 2, 3],
     "WorkModes": [1, 2, 3]
 }
+
+
+start docker redis image 
+
+docker run -d --name my-redis-container -p 6379:6379 redis
+ 
+ ----------------------------
+
+
+stop and remove previous redis image
+
+docker stop my-redis-container
+docker rm my-redis-container
+
+------------------------------

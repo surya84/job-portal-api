@@ -38,9 +38,10 @@ func (s *Conn) ViewCompanies() ([]models.Company, error) {
 func (s *Conn) GetCompanyByID(uid int) (models.Company, error) {
 
 	var com models.Company
-	tx := s.db.Where("ID = ?", uid)
-	err := tx.Find(&com).Error
-	if err != nil {
+	tx := s.db.Where("ID = ?", uid).Find(&com)
+	// err := tx.Find(&com).Error
+	// fmt.Println("========", err)
+	if tx.Error != nil || tx.RowsAffected == 0 {
 		return models.Company{}, errors.New("company not found")
 	}
 	return com, nil

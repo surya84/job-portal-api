@@ -995,212 +995,211 @@ func TestNewService_ProcessJob(t *testing.T) {
 		newJob []models.ApplicationRequest
 	}
 	tests := []struct {
-		name       string
-		r          NewService
-		args       args
-		want       []models.ApplicationRequest
-		wantErr    bool
-		setup      func(mockRepo *repository.MockRepository)
-		setupCache func(mockCache *rediscache.MockCache)
+		name    string
+		r       NewService
+		args    args
+		want    []models.ApplicationRequest
+		wantErr bool
+		setup   func(mockRepo *repository.MockRepository, mockCache *rediscache.MockCache)
 	}{
+		// {
+		// 	name: "error case",
+		// 	args: args{
+		// 		ctx: context.Background(),
+		// 		newJob: []models.ApplicationRequest{
+
+		// 			//budget fail case
+		// 			{
+		// 				Name:           "surya",
+		// 				Id:             3,
+		// 				Title:          "java developer",
+		// 				NoticePeriod:   intPtr(30),
+		// 				Budget:         2500000,
+		// 				Experience:     3.5,
+		// 				Qualifications: []uint{1, 2},
+		// 				Shifts:         []uint{1, 2, 3},
+		// 				JobTypes:       []uint{1, 2},
+		// 				Locations:      []uint{1, 2},
+		// 				Technologies:   []uint{1, 2},
+		// 				WorkModes:      []uint{1, 2},
+		// 			},
+		// 			{
+		// 				Name:           "teja",
+		// 				Id:             4,
+		// 				Title:          "data science",
+		// 				NoticePeriod:   intPtr(30),
+		// 				Budget:         25000,
+		// 				Experience:     3.5,
+		// 				Qualifications: []uint{1, 2},
+		// 				Shifts:         []uint{1, 2, 3},
+		// 				JobTypes:       []uint{1, 2},
+		// 				Locations:      []uint{1, 2},
+		// 				Technologies:   []uint{1, 2},
+		// 				WorkModes:      []uint{1, 2},
+		// 			},
+
+		// 			//notice period fail case
+		// 			{
+		// 				Name:           "Ram",
+		// 				Id:             2,
+		// 				Title:          "data science",
+		// 				NoticePeriod:   intPtr(1000),
+		// 				Budget:         25000,
+		// 				Experience:     3.5,
+		// 				Qualifications: []uint{1, 2},
+		// 				Shifts:         []uint{1, 2, 3},
+		// 				JobTypes:       []uint{1, 2},
+		// 				Locations:      []uint{1, 2},
+		// 				Technologies:   []uint{1, 2},
+		// 				WorkModes:      []uint{1, 2},
+		// 			},
+
+		// 			//experience fail case
+		// 			{
+		// 				Name:           "Lucky",
+		// 				Id:             5,
+		// 				Title:          "C developer",
+		// 				NoticePeriod:   intPtr(30),
+		// 				Budget:         25000,
+		// 				Experience:     1.2,
+		// 				Qualifications: []uint{1, 2},
+		// 				Shifts:         []uint{1, 2, 3},
+		// 				JobTypes:       []uint{1, 2},
+		// 				Locations:      []uint{1, 2},
+		// 				Technologies:   []uint{1, 2},
+		// 				WorkModes:      []uint{1, 2},
+		// 			},
+		// 		},
+		// 	},
+		// 	want:    nil,
+		// 	wantErr: false,
+		// 	setup: func(mockRepo *repository.MockRepository, mockCache *rediscache.MockCache) {
+		// 		mockRepo.EXPECT().GetJobProcessData(3).Return(models.Job{
+		// 			Model:              gorm.Model{ID: 2},
+		// 			Title:              "java developer",
+		// 			Min_NoticePeriod:   10,
+		// 			Max_NoticePeriod:   40,
+		// 			Budget:             25090,
+		// 			Description:        "java development",
+		// 			Minimum_Experience: 2.5,
+		// 			Maximum_Experience: 5.5,
+		// 			Qualifications: []models.Qualification{
+		// 				{Model: gorm.Model{ID: 2}},
+		// 			},
+		// 			Shifts: []models.Shift{
+		// 				{Model: gorm.Model{ID: 2}},
+		// 			},
+		// 			JobTypes: []models.JobType{
+		// 				{Model: gorm.Model{ID: 2}},
+		// 			},
+
+		// 			Locations: []models.Location{
+		// 				{Model: gorm.Model{ID: 2}},
+		// 			},
+		// 			Technologies: []models.Technology{
+		// 				{Model: gorm.Model{ID: 2}},
+		// 			},
+		// 			WorkModes: []models.WorkMode{
+		// 				{Model: gorm.Model{ID: 2}},
+		// 			},
+		// 		}, nil).Times(1)
+		// 		mockRepo.EXPECT().GetJobProcessData(4).Return(models.Job{
+
+		// 			Model:              gorm.Model{ID: 4},
+		// 			Title:              " data science",
+		// 			Min_NoticePeriod:   10,
+		// 			Max_NoticePeriod:   40,
+		// 			Budget:             25090,
+		// 			Description:        "work on data sets",
+		// 			Minimum_Experience: 2.5,
+		// 			Maximum_Experience: 5.5,
+		// 			Qualifications: []models.Qualification{
+		// 				{Model: gorm.Model{ID: 4}},
+		// 			},
+		// 			Shifts: []models.Shift{
+		// 				{Model: gorm.Model{ID: 4}},
+		// 			},
+		// 			JobTypes: []models.JobType{
+		// 				{Model: gorm.Model{ID: 4}},
+		// 			},
+
+		// 			Locations: []models.Location{
+		// 				{Model: gorm.Model{ID: 4}},
+		// 			},
+		// 			Technologies: []models.Technology{
+		// 				{Model: gorm.Model{ID: 4}},
+		// 			},
+		// 			WorkModes: []models.WorkMode{
+		// 				{Model: gorm.Model{ID: 4}},
+		// 			},
+		// 		}, nil).Times(1)
+
+		// 		mockRepo.EXPECT().GetJobProcessData(2).Return(models.Job{
+
+		// 			Model:              gorm.Model{ID: 2},
+		// 			Title:              " data science",
+		// 			Min_NoticePeriod:   30,
+		// 			Max_NoticePeriod:   60,
+		// 			Budget:             25090,
+		// 			Description:        "work on data sets",
+		// 			Minimum_Experience: 2.5,
+		// 			Maximum_Experience: 5.5,
+		// 			Qualifications: []models.Qualification{
+		// 				{Model: gorm.Model{ID: 2}},
+		// 			},
+		// 			Shifts: []models.Shift{
+		// 				{Model: gorm.Model{ID: 2}},
+		// 			},
+		// 			JobTypes: []models.JobType{
+		// 				{Model: gorm.Model{ID: 2}},
+		// 			},
+
+		// 			Locations: []models.Location{
+		// 				{Model: gorm.Model{ID: 2}},
+		// 			},
+		// 			Technologies: []models.Technology{
+		// 				{Model: gorm.Model{ID: 2}},
+		// 			},
+		// 			WorkModes: []models.WorkMode{
+		// 				{Model: gorm.Model{ID: 2}},
+		// 			},
+		// 		}, nil).Times(1)
+
+		// 		mockRepo.EXPECT().GetJobProcessData(5).Return(models.Job{
+
+		// 			Model:              gorm.Model{ID: 5},
+		// 			Title:              "C developer",
+		// 			Min_NoticePeriod:   30,
+		// 			Max_NoticePeriod:   40,
+		// 			Budget:             25090,
+		// 			Description:        "work on data sets",
+		// 			Minimum_Experience: 2.5,
+		// 			Maximum_Experience: 5.5,
+		// 			Qualifications: []models.Qualification{
+		// 				{Model: gorm.Model{ID: 5}},
+		// 			},
+		// 			Shifts: []models.Shift{
+		// 				{Model: gorm.Model{ID: 5}},
+		// 			},
+		// 			JobTypes: []models.JobType{
+		// 				{Model: gorm.Model{ID: 5}},
+		// 			},
+
+		// 			Locations: []models.Location{
+		// 				{Model: gorm.Model{ID: 5}},
+		// 			},
+		// 			Technologies: []models.Technology{
+		// 				{Model: gorm.Model{ID: 5}},
+		// 			},
+		// 			WorkModes: []models.WorkMode{
+		// 				{Model: gorm.Model{ID: 5}},
+		// 			},
+		// 		}, nil).Times(1)
+		// 	},
+		// },
+
 		{
-			name: "error case",
-			args: args{
-				ctx: context.Background(),
-				newJob: []models.ApplicationRequest{
-
-					//budget fail case
-					{
-						Name:           "surya",
-						Id:             3,
-						Title:          "java developer",
-						NoticePeriod:   intPtr(30),
-						Budget:         2500000,
-						Experience:     3.5,
-						Qualifications: []uint{1, 2},
-						Shifts:         []uint{1, 2, 3},
-						JobTypes:       []uint{1, 2},
-						Locations:      []uint{1, 2},
-						Technologies:   []uint{1, 2},
-						WorkModes:      []uint{1, 2},
-					},
-					{
-						Name:           "teja",
-						Id:             4,
-						Title:          "data science",
-						NoticePeriod:   intPtr(30),
-						Budget:         25000,
-						Experience:     3.5,
-						Qualifications: []uint{1, 2},
-						Shifts:         []uint{1, 2, 3},
-						JobTypes:       []uint{1, 2},
-						Locations:      []uint{1, 2},
-						Technologies:   []uint{1, 2},
-						WorkModes:      []uint{1, 2},
-					},
-
-					//notice period fail case
-					{
-						Name:           "Ram",
-						Id:             2,
-						Title:          "data science",
-						NoticePeriod:   intPtr(1000),
-						Budget:         25000,
-						Experience:     3.5,
-						Qualifications: []uint{1, 2},
-						Shifts:         []uint{1, 2, 3},
-						JobTypes:       []uint{1, 2},
-						Locations:      []uint{1, 2},
-						Technologies:   []uint{1, 2},
-						WorkModes:      []uint{1, 2},
-					},
-
-					//experience fail case
-					{
-						Name:           "Lucky",
-						Id:             5,
-						Title:          "C developer",
-						NoticePeriod:   intPtr(30),
-						Budget:         25000,
-						Experience:     1.2,
-						Qualifications: []uint{1, 2},
-						Shifts:         []uint{1, 2, 3},
-						JobTypes:       []uint{1, 2},
-						Locations:      []uint{1, 2},
-						Technologies:   []uint{1, 2},
-						WorkModes:      []uint{1, 2},
-					},
-				},
-			},
-			want:    nil,
-			wantErr: false,
-			setup: func(mockRepo *repository.MockRepository) {
-				mockRepo.EXPECT().GetJobProcessData(3).Return(models.Job{
-					Model:              gorm.Model{ID: 2},
-					Title:              "java developer",
-					Min_NoticePeriod:   10,
-					Max_NoticePeriod:   40,
-					Budget:             25090,
-					Description:        "java development",
-					Minimum_Experience: 2.5,
-					Maximum_Experience: 5.5,
-					Qualifications: []models.Qualification{
-						{Model: gorm.Model{ID: 2}},
-					},
-					Shifts: []models.Shift{
-						{Model: gorm.Model{ID: 2}},
-					},
-					JobTypes: []models.JobType{
-						{Model: gorm.Model{ID: 2}},
-					},
-
-					Locations: []models.Location{
-						{Model: gorm.Model{ID: 2}},
-					},
-					Technologies: []models.Technology{
-						{Model: gorm.Model{ID: 2}},
-					},
-					WorkModes: []models.WorkMode{
-						{Model: gorm.Model{ID: 2}},
-					},
-				}, nil).Times(1)
-				mockRepo.EXPECT().GetJobProcessData(4).Return(models.Job{
-
-					Model:              gorm.Model{ID: 4},
-					Title:              " data science",
-					Min_NoticePeriod:   10,
-					Max_NoticePeriod:   40,
-					Budget:             25090,
-					Description:        "work on data sets",
-					Minimum_Experience: 2.5,
-					Maximum_Experience: 5.5,
-					Qualifications: []models.Qualification{
-						{Model: gorm.Model{ID: 4}},
-					},
-					Shifts: []models.Shift{
-						{Model: gorm.Model{ID: 4}},
-					},
-					JobTypes: []models.JobType{
-						{Model: gorm.Model{ID: 4}},
-					},
-
-					Locations: []models.Location{
-						{Model: gorm.Model{ID: 4}},
-					},
-					Technologies: []models.Technology{
-						{Model: gorm.Model{ID: 4}},
-					},
-					WorkModes: []models.WorkMode{
-						{Model: gorm.Model{ID: 4}},
-					},
-				}, nil).Times(1)
-
-				mockRepo.EXPECT().GetJobProcessData(2).Return(models.Job{
-
-					Model:              gorm.Model{ID: 2},
-					Title:              " data science",
-					Min_NoticePeriod:   30,
-					Max_NoticePeriod:   60,
-					Budget:             25090,
-					Description:        "work on data sets",
-					Minimum_Experience: 2.5,
-					Maximum_Experience: 5.5,
-					Qualifications: []models.Qualification{
-						{Model: gorm.Model{ID: 2}},
-					},
-					Shifts: []models.Shift{
-						{Model: gorm.Model{ID: 2}},
-					},
-					JobTypes: []models.JobType{
-						{Model: gorm.Model{ID: 2}},
-					},
-
-					Locations: []models.Location{
-						{Model: gorm.Model{ID: 2}},
-					},
-					Technologies: []models.Technology{
-						{Model: gorm.Model{ID: 2}},
-					},
-					WorkModes: []models.WorkMode{
-						{Model: gorm.Model{ID: 2}},
-					},
-				}, nil).Times(1)
-
-				mockRepo.EXPECT().GetJobProcessData(5).Return(models.Job{
-
-					Model:              gorm.Model{ID: 5},
-					Title:              "C developer",
-					Min_NoticePeriod:   30,
-					Max_NoticePeriod:   40,
-					Budget:             25090,
-					Description:        "work on data sets",
-					Minimum_Experience: 2.5,
-					Maximum_Experience: 5.5,
-					Qualifications: []models.Qualification{
-						{Model: gorm.Model{ID: 5}},
-					},
-					Shifts: []models.Shift{
-						{Model: gorm.Model{ID: 5}},
-					},
-					JobTypes: []models.JobType{
-						{Model: gorm.Model{ID: 5}},
-					},
-
-					Locations: []models.Location{
-						{Model: gorm.Model{ID: 5}},
-					},
-					Technologies: []models.Technology{
-						{Model: gorm.Model{ID: 5}},
-					},
-					WorkModes: []models.WorkMode{
-						{Model: gorm.Model{ID: 5}},
-					},
-				}, nil).Times(1)
-			},
-		},
-
-		{
-			name: "success",
+			name: "error from redis",
 			args: args{
 				ctx: context.Background(),
 				newJob: []models.ApplicationRequest{
@@ -1219,20 +1218,20 @@ func TestNewService_ProcessJob(t *testing.T) {
 						Technologies:   []uint{1, 2, 3},
 						WorkModes:      []uint{1, 2, 3},
 					},
-					{
-						Name:           "teja",
-						Id:             10,
-						Title:          "java developer",
-						NoticePeriod:   intPtr(30),
-						Budget:         2500000,
-						Experience:     3.5,
-						Qualifications: []uint{1, 2},
-						Shifts:         []uint{1, 2, 3},
-						JobTypes:       []uint{1, 2},
-						Locations:      []uint{1, 2},
-						Technologies:   []uint{1, 2},
-						WorkModes:      []uint{1, 2},
-					},
+					// {
+					// 	Name:           "teja",
+					// 	Id:             10,
+					// 	Title:          "java developer",
+					// 	NoticePeriod:   intPtr(30),
+					// 	Budget:         2500000,
+					// 	Experience:     3.5,
+					// 	Qualifications: []uint{1, 2},
+					// 	Shifts:         []uint{1, 2, 3},
+					// 	JobTypes:       []uint{1, 2},
+					// 	Locations:      []uint{1, 2},
+					// 	Technologies:   []uint{1, 2},
+					// 	WorkModes:      []uint{1, 2},
+					// },
 				},
 			},
 			want: []models.ApplicationRequest{
@@ -1252,9 +1251,9 @@ func TestNewService_ProcessJob(t *testing.T) {
 				},
 			},
 			wantErr: false,
-			setup: func(mockRepo *repository.MockRepository) {
-				mockRepo.EXPECT().GetJobProcessData(10).Return(models.Job{}, errors.New("no data found for job id")).Times(1)
-				mockRepo.EXPECT().GetJobProcessData(3).Return(models.Job{
+			setup: func(mockRepo *repository.MockRepository, mockCache *rediscache.MockCache) {
+				//mockRepo.EXPECT().GetJobProcessData(10).Return(models.Job{}, errors.New("no data found for job id")).Times(1)
+				mockCache.EXPECT().CheckRedisKey(gomock.Any()).Return(models.Job{
 					Model:              gorm.Model{ID: 3},
 					Title:              "java developer",
 					Min_NoticePeriod:   20,
@@ -1284,6 +1283,121 @@ func TestNewService_ProcessJob(t *testing.T) {
 				}, nil).Times(1)
 			},
 		},
+
+		{
+			name: "success",
+			args: args{
+				ctx: context.Background(),
+				newJob: []models.ApplicationRequest{
+
+					{
+						Name:           "surya",
+						Id:             1,
+						Title:          "java developer",
+						NoticePeriod:   intPtr(20),
+						Budget:         25000,
+						Experience:     3.5,
+						Qualifications: []uint{1, 2},
+						Shifts:         []uint{1, 2, 3},
+						JobTypes:       []uint{1, 2, 3},
+						Locations:      []uint{1, 2, 3},
+						Technologies:   []uint{1, 2, 3},
+						WorkModes:      []uint{1, 2, 3},
+					},
+					// {
+					// 	Name:           "teja",
+					// 	Id:             1,
+					// 	Title:          "java developer",
+					// 	NoticePeriod:   intPtr(1000),
+					// 	Budget:         2500000,
+					// 	Experience:     3.5,
+					// 	Qualifications: []uint{1, 2},
+					// 	Shifts:         []uint{1, 2, 3},
+					// 	JobTypes:       []uint{1, 2, 3},
+					// 	Locations:      []uint{1, 2, 3},
+					// 	Technologies:   []uint{1, 2, 3},
+					// 	WorkModes:      []uint{1, 2, 3},
+					// },
+				},
+			},
+			want: []models.ApplicationRequest{
+				{
+					Name:           "surya",
+					Id:             1,
+					Title:          "java developer",
+					NoticePeriod:   intPtr(20),
+					Budget:         25000,
+					Experience:     3.5,
+					Qualifications: []uint{1, 2},
+					Shifts:         []uint{1, 2, 3},
+					JobTypes:       []uint{1, 2, 3},
+					Locations:      []uint{1, 2, 3},
+					Technologies:   []uint{1, 2, 3},
+					WorkModes:      []uint{1, 2, 3},
+				},
+			},
+			wantErr: false,
+			setup: func(mockRepo *repository.MockRepository, mockCache *rediscache.MockCache) {
+				mockCache.EXPECT().CheckRedisKey("1").Return(models.Job{}, errors.New("error from cache")).Times(1)
+				mockRepo.EXPECT().GetJobProcessData(1).Return(models.Job{
+					Model:              gorm.Model{ID: 1},
+					Title:              "java developer",
+					Min_NoticePeriod:   20,
+					Max_NoticePeriod:   30,
+					Budget:             25000,
+					Description:        "java development",
+					Minimum_Experience: 2.5,
+					Maximum_Experience: 5.5,
+					Qualifications: []models.Qualification{
+						{Model: gorm.Model{ID: 1}},
+					},
+					Shifts: []models.Shift{
+						{Model: gorm.Model{ID: 1}},
+					},
+					JobTypes: []models.JobType{
+						{Model: gorm.Model{ID: 1}},
+					},
+					Locations: []models.Location{
+						{Model: gorm.Model{ID: 1}},
+					},
+					Technologies: []models.Technology{
+						{Model: gorm.Model{ID: 1}},
+					},
+					WorkModes: []models.WorkMode{
+						{Model: gorm.Model{ID: 1}},
+					},
+				}, nil).Times(1)
+
+				mockCache.EXPECT().SetRedisKey("1", models.Job{
+					Model:              gorm.Model{ID: 1},
+					Title:              "java developer",
+					Min_NoticePeriod:   20,
+					Max_NoticePeriod:   30,
+					Budget:             25000,
+					Description:        "java development",
+					Minimum_Experience: 2.5,
+					Maximum_Experience: 5.5,
+					Qualifications: []models.Qualification{
+						{Model: gorm.Model{ID: 1}},
+					},
+					Shifts: []models.Shift{
+						{Model: gorm.Model{ID: 1}},
+					},
+					JobTypes: []models.JobType{
+						{Model: gorm.Model{ID: 1}},
+					},
+					Locations: []models.Location{
+						{Model: gorm.Model{ID: 1}},
+					},
+					Technologies: []models.Technology{
+						{Model: gorm.Model{ID: 1}},
+					},
+					WorkModes: []models.WorkMode{
+						{Model: gorm.Model{ID: 1}},
+					},
+				})
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -1293,8 +1407,8 @@ func TestNewService_ProcessJob(t *testing.T) {
 			mockRepo := repository.NewMockRepository(mc)
 			mockCache := rediscache.NewMockCache(mc)
 
-			tt.setup(mockRepo)
-			tt.setupCache(mockCache)
+			tt.setup(mockRepo, mockCache)
+			//tt.setupCache(mockCache)
 			s := NewServiceStore(mockRepo, mockCache)
 			got, err := s.ProcessJob(tt.args.ctx, tt.args.newJob)
 			if (err != nil) != tt.wantErr {

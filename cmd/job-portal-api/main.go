@@ -31,7 +31,7 @@ func startApp() error {
 	// =========================================================================
 	// Initialize authentication support
 	log.Info().Msg("main : Started : Initializing authentication support")
-	privatePEM, err := os.ReadFile(`C:\Users\ORR Training 2\Desktop\job-portal-api\private.pem`)
+	privatePEM, err := os.ReadFile(`private.pem`)
 	if err != nil {
 		return fmt.Errorf("reading auth private key %w", err)
 	}
@@ -40,7 +40,7 @@ func startApp() error {
 		return fmt.Errorf("parsing auth private key %w", err)
 	}
 
-	publicPEM, err := os.ReadFile(`C:\Users\ORR Training 2\Desktop\job-portal-api\public.pem`)
+	publicPEM, err := os.ReadFile(`public.pem`)
 	if err != nil {
 		return fmt.Errorf("reading auth public key %w", err)
 	}

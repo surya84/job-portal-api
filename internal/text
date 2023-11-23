@@ -1,0 +1,136 @@
+package main
+ 
+import (
+    "fmt"
+    "net/smtp"
+)
+ 
+func main() {
+    // Sender's email address and password
+    from := ""
+    password := ""
+ 
+    // Recipient's email address
+    to := ""
+ 
+    // SMTP server details
+    smtpServer := "smtp.gmail.com"
+    smtpPort := 587
+ 
+    // Message content
+    message := []byte("Subject: Test Email\n\nThis is a test email body.")
+ 
+    // Authentication information
+    auth := smtp.PlainAuth("", from, password, smtpServer)
+ 
+    // SMTP connection
+    smtpAddr := fmt.Sprintf("%s:%d", smtpServer, smtpPort)
+    err := smtp.SendMail(smtpAddr, auth, from, []string{to}, message)
+    if err != nil {
+        fmt.Println("Error sending email:", err)
+        return
+    }
+ 
+    fmt.Println("Email sent successfully!")
+}
+
+
+package config
+ 
+import (
+    "log"
+ 
+    env "github.com/Netflix/go-env"
+)
+ 
+var cfg Config
+ 
+type Config struct {
+    AppConfig AppConfig
+}
+ 
+type AppConfig struct {
+    Port string `env:"APP_PORT,required=true"`
+}
+ 
+func init() {
+    _, err := env.UnmarshalFromEnviron(&cfg)
+    if err != nil {
+        log.Panic(err)
+    }
+}
+ 
+func GetConfig() Config {
+    return cfg
+}
+ 
+
+
+version: "3"
+ 
+services:
+  job-portal:
+    container_name: job-portal
+    image: "job-portal"
+    ports:
+      - "8080:8080"
+    build: .
+    env_file:
+      - .env
+      - .auth.env
+    depends_on:
+      - postgres
+    restart: always
+  postgres:
+    container_name: postgres
+    image: postgres
+    ports:
+      - "5432:5432"
+    env_file:
+      - .db.env
+    # environment:
+    #   - POSTGRES_USER=postgres
+    #   - POSTGRES_PASSWORD=admin
+    #   - POSTGRES_DB=postgres
+ 
+has context menu
+
+
+FROM golang:1.21.4-alpine3.18 AS builder
+ 
+WORKDIR /app
+ 
+COPY go.mod .
+COPY go.sum .
+ 
+RUN go mod download
+ 
+COPY . .
+ 
+RUN go build -o server cmd/job-portal-api/main.go
+ 
+ 
+FROM scratch
+ 
+WORKDIR /app
+ 
+COPY --from=builder /app/server .
+COPY --from=builder /app/private.pem .
+COPY --from=builder /app/public.pem .
+ 
+CMD [ "./server" ]
+has context menu
+
+
+
+run postgres container
+docker run -d --name postgres -e POSTGRES_PASSWORD=admin -e POSTGRES_USER=postgres -e POSTGRES_DB=job-portal-api --network=job-portal postgres
+-------------------------
+then run the docker image
+docker container run --name job-portal-api -d --network=job-portal -p 8080:8080 job-portal-api
+--------------
+
+build image
+docker build -t job-portal-api:latest .
+
+-------------------------------------------

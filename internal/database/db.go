@@ -1,6 +1,8 @@
 package database
 
 import (
+	"fmt"
+	"job-portal/config"
 	"job-portal/internal/models"
 
 	"gorm.io/driver/postgres"
@@ -8,7 +10,9 @@ import (
 )
 
 func Open() (*gorm.DB, error) {
-	dsn := "host=postgres user=postgres password=admin dbname=job-portal-api port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+	// dsn := os.Getenv("DB_DSN")
+	cfg := config.GetConfig()
+	dsn := fmt.Sprintf("%s", cfg.DbConfig.DbConn)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, err
@@ -21,7 +25,7 @@ func Open() (*gorm.DB, error) {
 
 	err = db.Migrator().AutoMigrate(&models.User{}, &models.Company{}, &models.Job{})
 	if err != nil {
-		
+
 		return nil, err
 	}
 	return db, nil

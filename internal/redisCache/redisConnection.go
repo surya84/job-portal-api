@@ -2,7 +2,10 @@ package rediscache
 
 import (
 	"encoding/json"
+	"fmt"
+	"job-portal/config"
 	"job-portal/internal/models"
+	"strconv"
 	"time"
 
 	"github.com/go-redis/redis"
@@ -10,10 +13,12 @@ import (
 )
 
 func RedisClient() *redis.Client {
+	cfg := config.GetConfig()
+	db, _ := strconv.Atoi(cfg.Redis.Db)
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
+		Addr:     fmt.Sprintf(":%s", cfg.Redis.Address),
+		Password: cfg.Redis.Password,
+		DB:       db,
 	})
 
 	return rdb
@@ -25,6 +30,7 @@ func RedisClient() *redis.Client {
 type Cache interface {
 	SetRedisKey(key string, job models.Job)
 	CheckRedisKey(key string) (models.Job, error)
+	AddOtpToCache(email string, otp int)
 }
 
 type RdbConnection struct {
@@ -63,4 +69,13 @@ func (r *RdbConnection) CheckRedisKey(key string) (models.Job, error) {
 		log.Err(err)
 	}
 	return job, nil
+}
+
+func (r *RdbConnection) AddOtpToCache(email string, otp int) {
+	otpNumber := string(otp)
+	err := r.rdb.Set(email, otpNumber, 10*time.Minute).Err()
+	if err != nil {
+		log.Err(err)
+		return
+	}
 }

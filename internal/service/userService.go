@@ -2,7 +2,13 @@ package service
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"job-portal/internal/models"
+	"math/rand"
+	"net/smtp"
+	"strconv"
+	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -20,4 +26,59 @@ func (r NewService) Authenticate(ctx context.Context, email string, password str
 		return jwt.RegisteredClaims{}, err
 	}
 	return userData, err
+}
+
+func (r NewService) CheckEmail(ctx context.Context, passwordRequest models.UserRequest) (string, error) {
+
+	email := passwordRequest.Email
+	//dob := passwordRequest.Dob
+	err := r.rp.CheckUserData(ctx, email)
+
+	if !err {
+		return "Email not found", errors.New("")
+	}
+
+	fmt.Println("email", email)
+
+	rand.Seed(time.Now().UnixNano())
+	randomNumber := rand.Intn(90000) + 10000
+	otp := strconv.Itoa(randomNumber)
+	fmt.Println("otp string", otp)
+	fmt.Println("otp", randomNumber)
+
+	r.rdb.AddOtpToCache(email, randomNumber)
+
+	// Sender's email address and password
+	from := "suryatejamulabagal@gmail.com"
+	password := "rejz mrjt ypkw lyfc"
+
+	// Recipient's email address
+	to := "suryateja7285@gmail.com"
+
+	// SMTP server details
+	smtpServer := "smtp.gmail.com"
+	smtpPort := 587
+
+	// Message content
+	message := []byte("Subject: otp details\n\n  " + "your otp for changing password " + otp)
+
+	// Authentication information
+	auth := smtp.PlainAuth("", from, password, smtpServer)
+
+	// SMTP connection
+	smtpAddr := fmt.Sprintf("%s:%d", smtpServer, smtpPort)
+	ok := smtp.SendMail(smtpAddr, auth, from, []string{to}, message)
+	if ok != nil {
+		fmt.Println("Error sending email:", err)
+		return "otp not sent", errors.New("")
+	}
+
+	fmt.Println("email sent successfully!")
+
+	return "otp sent succesfully", nil
+
+}
+
+func (r NewService) CheckOtpResponse(ctx context.Context, otpVerification models.CheckOtp) (string, error){
+	
 }

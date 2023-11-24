@@ -4,6 +4,7 @@ import (
 	//"job-portal/internal/handlers"
 	"context"
 	"fmt"
+	"job-portal/config"
 	"job-portal/internal/auth"
 	"job-portal/internal/database"
 	"job-portal/internal/handlers"
@@ -28,24 +29,26 @@ func main() {
 }
 func startApp() error {
 
+	cfg := config.GetConfig()
+
 	// =========================================================================
 	// Initialize authentication support
 	log.Info().Msg("main : Started : Initializing authentication support")
-	privatePEM, err := os.ReadFile(`private.pem`)
-	if err != nil {
-		return fmt.Errorf("reading auth private key %w", err)
-	}
-	privateKey, err := jwt.ParseRSAPrivateKeyFromPEM(privatePEM)
+	privatePEM := cfg.Keys.PrivateKey
+	// if err != nil {
+	// 	return fmt.Errorf("reading auth private key %w", err)
+	// }
+	privateKey, err := jwt.ParseRSAPrivateKeyFromPEM([]byte(privatePEM))
 	if err != nil {
 		return fmt.Errorf("parsing auth private key %w", err)
 	}
 
-	publicPEM, err := os.ReadFile(`public.pem`)
-	if err != nil {
-		return fmt.Errorf("reading auth public key %w", err)
-	}
+	publicPEM := cfg.Keys.PublicKey
+	// if err != nil {
+	// 	return fmt.Errorf("reading auth public key %w", err)
+	// }
 
-	publicKey, err := jwt.ParseRSAPublicKeyFromPEM(publicPEM)
+	publicKey, err := jwt.ParseRSAPublicKeyFromPEM([]byte(publicPEM))
 	if err != nil {
 		return fmt.Errorf("parsing auth public key %w", err)
 	}
@@ -84,17 +87,12 @@ func startApp() error {
 		return err
 	}
 
-	// redis := rediscache.RedisClient()
-	// redisConn := service.NewServiceRedis(redis)
-
-	//repo := repository.NewRepo(ms)
-
-	// Initialize http service
 	api := http.Server{
-		Addr:         ":8080",
-		ReadTimeout:  8000 * time.Second,
-		WriteTimeout: 800 * time.Second,
-		IdleTimeout:  800 * time.Second,
+		Addr: fmt.Sprintf(":%s", cfg.AppConfig.Port),
+
+		ReadTimeout:  time.Duration(cfg.AppConfig.ReadTime) * time.Second,
+		WriteTimeout: time.Duration(cfg.AppConfig.WriteTime) * time.Second,
+		IdleTimeout:  time.Duration(cfg.AppConfig.Idle_Time) * time.Second,
 		Handler:      handlers.API(a, ms, redisLayer),
 	}
 
@@ -114,9 +112,7 @@ func startApp() error {
 		log.Info().Msgf("main: Start shutdown %s", sig)
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
-		//Shutdown gracefully shuts down the server without interrupting any active connections.
-		//Shutdown works by first closing all open listeners, then closing all idle connections,
-		//and then waiting indefinitely for connections to return to idle and then shut down.
+
 		err := api.Shutdown(ctx)
 		if err != nil {
 			//Close immediately closes all active net.Listeners

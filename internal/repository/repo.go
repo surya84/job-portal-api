@@ -29,6 +29,8 @@ type Repository interface {
 
 	GetJobProcessData(id int) (models.Job, error)
 
+	CheckUserData(ctx context.Context, email string) bool
+
 	//GetDataFromRedis(jid uint)
 }
 

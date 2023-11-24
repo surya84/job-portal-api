@@ -14,7 +14,7 @@ import (
 func API(a *auth.Auth, c repository.Repository, redis rediscache.Cache) *gin.Engine {
 
 	r := gin.New()
-	
+
 	m, err := middleware.NewMid(a)
 	s := service.NewServiceStore(c, redis)
 	h := handler{
@@ -38,6 +38,8 @@ func API(a *auth.Auth, c repository.Repository, redis rediscache.Cache) *gin.Eng
 	r.GET("/api/jobs/:id", m.Authenticate(h.ViewJobById))
 	r.GET("/api/companies/:id/jobs", m.Authenticate(h.ViewJobByCompany))
 	r.POST("/api/processjobapplication", m.Authenticate(h.ProcessJobApplication))
+	r.POST("/api/forgetpassword", h.ForgetPassword)
+	r.POST("/api/checkotp", h.VerifyOtp)
 
 	// Return the prepared Gin engine
 	return r

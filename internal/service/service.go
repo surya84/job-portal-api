@@ -10,8 +10,7 @@ import (
 )
 
 type NewService struct {
-	rp repository.Repository
-	//redis *redis.Client
+	rp  repository.Repository
 	rdb rediscache.Cache
 }
 
@@ -28,7 +27,10 @@ type Service interface {
 	GetCompanyInfoByID(ctx context.Context, uid int) (models.Company, error)
 
 	ProcessJob(ctx context.Context, nj []models.ApplicationRequest) ([]models.ApplicationRequest, error)
-	//Compare(nj models.ApplicationRequest, job models.Job) (models.ApplicationRequest, error)
+
+	CheckEmail(ctx context.Context, passwordRequest models.UserRequest) (string, error)
+
+	CheckOtpResponse(ctx context.Context, otpVerification models.CheckOtp) (string, error)
 }
 
 func NewServiceStore(s repository.Repository, r rediscache.Cache) Service {

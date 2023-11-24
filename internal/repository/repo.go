@@ -31,6 +31,8 @@ type Repository interface {
 
 	CheckUserData(ctx context.Context, email string) bool
 
+	SavePassword(ctx context.Context, otp models.CheckOtp) bool
+
 	//GetDataFromRedis(jid uint)
 }
 

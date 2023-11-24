@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/rs/zerolog/log"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -63,5 +64,28 @@ func (s *Conn) CheckUserData(ctx context.Context, email string) bool {
 	if tx.Error != nil || tx.RowsAffected == 0 {
 		return false
 	}
+	return true
+}
+
+func (s *Conn) SavePassword(ctx context.Context, otp models.CheckOtp) bool {
+
+	if otp.NewPassword != otp.ConfirmPassword {
+		log.Error().Msg("password not matched")
+		return false
+	}
+	Pass := otp.NewPassword
+	hashedPass, err := bcrypt.GenerateFromPassword([]byte(Pass), bcrypt.DefaultCost)
+
+	if err != nil {
+		log.Error().Msg("hashed password error")
+		return false
+	}
+
+	tx := s.db.Model(&models.User{}).Where("email = ?", otp.Email).Update("PasswordHash", hashedPass)
+
+	if tx.Error != nil || tx.RowsAffected == 0 {
+		return false
+	}
+
 	return true
 }

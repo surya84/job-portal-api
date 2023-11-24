@@ -31,6 +31,7 @@ type Cache interface {
 	SetRedisKey(key string, job models.Job)
 	CheckRedisKey(key string) (models.Job, error)
 	AddOtpToCache(email string, otp int)
+	CheckOtpRequest(email string, otp string) bool
 }
 
 type RdbConnection struct {
@@ -78,4 +79,18 @@ func (r *RdbConnection) AddOtpToCache(email string, otp int) {
 		log.Err(err)
 		return
 	}
+}
+
+func (r *RdbConnection) CheckOtpRequest(email string, otp string) bool {
+
+	val, err := r.rdb.Get(email).Result()
+
+	if err != nil {
+		return false
+	}
+
+	if otp == val {
+		return true
+	}
+	return false
 }

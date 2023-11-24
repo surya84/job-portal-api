@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/rs/zerolog/log"
 )
 
 func (r NewService) CreateUser(ctx context.Context, nu models.NewUser) (models.User, error) {
@@ -79,6 +80,23 @@ func (r NewService) CheckEmail(ctx context.Context, passwordRequest models.UserR
 
 }
 
-func (r NewService) CheckOtpResponse(ctx context.Context, otpVerification models.CheckOtp) (string, error){
-	
+func (r NewService) CheckOtpResponse(ctx context.Context, otpVerification models.CheckOtp) (string, error) {
+
+	email := otpVerification.Email
+	otp := otpVerification.Otp
+	ok := r.rdb.CheckOtpRequest(email, otp)
+	if !ok {
+		log.Error().Msg("otp not matched")
+		return "otp verification failed", errors.New("")
+	}
+
+	savePasswordToDatabase := r.rp.SavePassword(ctx, otpVerification)
+
+	if !savePasswordToDatabase {
+		log.Error().Msg("")
+		return "Failed to change password", errors.New("")
+	}
+
+	return "password changed successfully", nil
+
 }

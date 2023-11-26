@@ -39,7 +39,7 @@ func API(a *auth.Auth, c repository.Repository, redis rediscache.Cache) *gin.Eng
 	r.GET("/api/companies/:id/jobs", m.Authenticate(h.ViewJobByCompany))
 	r.POST("/api/processjobapplication", m.Authenticate(h.ProcessJobApplication))
 	r.POST("/api/forgetpassword", h.ForgetPassword)
-	r.POST("/api/checkotp", h.VerifyOtp)
+	r.POST("/api/changePassword", h.ChangePassword)
 
 	// Return the prepared Gin engine
 	return r

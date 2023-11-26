@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"job-portal/config"
 	"job-portal/internal/models"
-	"strconv"
 	"time"
 
 	"github.com/go-redis/redis"
@@ -14,11 +13,12 @@ import (
 
 func RedisClient() *redis.Client {
 	cfg := config.GetConfig()
-	db, _ := strconv.Atoi(cfg.Redis.Db)
+	//db, _ := strconv.Atoi(cfg.Redis.Db)
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf(":%s", cfg.Redis.Address),
+		Addr: fmt.Sprintf("%s:%s", cfg.Redis.Host, cfg.Redis.Port),
+
 		Password: cfg.Redis.Password,
-		DB:       db,
+		DB:       cfg.Redis.DB,
 	})
 
 	return rdb
@@ -30,8 +30,9 @@ func RedisClient() *redis.Client {
 type Cache interface {
 	SetRedisKey(key string, job models.Job)
 	CheckRedisKey(key string) (models.Job, error)
-	AddOtpToCache(email string, otp int)
-	CheckOtpRequest(email string, otp string) bool
+	AddOtpToCache(email string, otp string)
+	CheckOtpRequest(email string) (string, error)
+	DeleteCacheData(email string) error
 }
 
 type RdbConnection struct {
@@ -72,25 +73,36 @@ func (r *RdbConnection) CheckRedisKey(key string) (models.Job, error) {
 	return job, nil
 }
 
-func (r *RdbConnection) AddOtpToCache(email string, otp int) {
-	otpNumber := string(otp)
-	err := r.rdb.Set(email, otpNumber, 10*time.Minute).Err()
+func (r *RdbConnection) AddOtpToCache(email string, otp string) {
+	//otpNumber := strconv.Itoa(otp)
+	err := r.rdb.Set(email, otp, 10*time.Minute).Err()
 	if err != nil {
 		log.Err(err)
+		fmt.Println("Error storing OTP in Redis:", err)
 		return
 	}
+	fmt.Println("OTP stored successfully in Redis for", email)
 }
 
-func (r *RdbConnection) CheckOtpRequest(email string, otp string) bool {
+func (r *RdbConnection) CheckOtpRequest(email string) (string, error) {
 
 	val, err := r.rdb.Get(email).Result()
 
-	if err != nil {
-		return false
+	if err == redis.Nil {
+		log.Err(err).Msg("Email data not found")
+		return "", err
 	}
+	return val, nil
 
-	if otp == val {
-		return true
-	}
-	return false
+	//return val, err
+	// if err == redis.Nil {
+
+	// 	return false
+	// }
+	// return otp == val
+}
+
+func (r *RdbConnection) DeleteCacheData(email string) error {
+
+	return r.rdb.Del(email).Err()
 }

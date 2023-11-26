@@ -27,9 +27,10 @@ type DbConfig struct {
 }
 
 type Redis struct {
-	Address  string `env:"ADDRESS_REDIS,required=true"`
-	Password string `env:"PASSWORD_REDIS,required=true"`
-	Db       string `env:"DB_REDIS,required=true"`
+	Host     string `env:"REDIS_HOST,default=localhost"`
+	Port     string `env:"REDIS_PORT,default=6379"`
+	Password string `env:"REDIS_PASSWORD,default=false"`
+	DB       int    `env:"REDIS_DB,default=false"`
 }
 type Keys struct {
 	PrivateKey string `env:"PRIVATE_KEY,required=true"`

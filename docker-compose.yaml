@@ -10,17 +10,18 @@ services:
     env_file:
       - .env
       - .db.env
-      - .redis.env
+      - .app.redis.env
       - .keys.env
     depends_on:
       - postgres
+      - redis
     restart: always
   
   postgres:
     container_name: postgres
     image: postgres
     ports:
-     - "5433:5432"
+     - "5432:5432"
     env_file:
       - .appdb.env
   
@@ -29,5 +30,8 @@ services:
     image: redis
     ports:
       - "6379:6379"
+    env_file:
+      - .redis.env
+    restart : always
 
     

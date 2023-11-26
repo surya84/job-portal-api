@@ -25,7 +25,7 @@ type UserRequest struct {
 
 type CheckOtp struct {
 	Email           string `json:"email" validate:"required,email"`
-	Otp             string `json:"dob" validate:"required"`
+	Otp             string `json:"otp" validate:"required"`
 	NewPassword     string `json:"new_password" validate:"required"`
 	ConfirmPassword string `json:"confirm_password" validate:"required"`
 }

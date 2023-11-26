@@ -23,6 +23,7 @@ func (s *Conn) CreateU(ctx context.Context, nu models.NewUser) (models.User, err
 		Name:         nu.Name,
 		Email:        nu.Email,
 		PasswordHash: string(hashedPass),
+		Dob:          nu.Dob,
 	}
 	err = s.db.Create(&u).Error
 	if err != nil {
@@ -58,9 +59,10 @@ func (s *Conn) AuthenticateUser(ctx context.Context, email, password string) (jw
 	return c, nil
 }
 
-func (s *Conn) CheckUserData(ctx context.Context, email string) bool {
+func (s *Conn) CheckUserData(ctx context.Context, email string, dob string) bool {
 	var data models.User
-	tx := s.db.Where("email = ?", email).Find(&data)
+	// tx := s.db.Debug().Where("email = ? AND dob = ?", email, dob).Find(&data)
+	tx := s.db.Where("email = ?", email).Where("dob = ?", dob).First(&data)
 	if tx.Error != nil || tx.RowsAffected == 0 {
 		return false
 	}
@@ -81,7 +83,7 @@ func (s *Conn) SavePassword(ctx context.Context, otp models.CheckOtp) bool {
 		return false
 	}
 
-	tx := s.db.Model(&models.User{}).Where("email = ?", otp.Email).Update("PasswordHash", hashedPass)
+	tx := s.db.Model(&models.User{}).Where("email = ? ", otp.Email).Update("PasswordHash", hashedPass)
 
 	if tx.Error != nil || tx.RowsAffected == 0 {
 		return false

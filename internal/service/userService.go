@@ -29,32 +29,32 @@ func (r NewService) Authenticate(ctx context.Context, email string, password str
 	return userData, err
 }
 
-func (r NewService) CheckEmail(ctx context.Context, passwordRequest models.UserRequest) (string, error) {
+func (r *NewService) CheckEmail(ctx context.Context, passwordRequest models.UserRequest) (string, error) {
 
 	email := passwordRequest.Email
+	dob := passwordRequest.Dob
 	//dob := passwordRequest.Dob
-	err := r.rp.CheckUserData(ctx, email)
+	err := r.rp.CheckUserData(ctx, email, dob)
 
 	if !err {
 		return "Email not found", errors.New("")
 	}
 
-	fmt.Println("email", email)
+	// fmt.Println("email", email)
 
 	rand.Seed(time.Now().UnixNano())
 	randomNumber := rand.Intn(90000) + 10000
 	otp := strconv.Itoa(randomNumber)
-	fmt.Println("otp string", otp)
-	fmt.Println("otp", randomNumber)
 
-	r.rdb.AddOtpToCache(email, randomNumber)
+	r.rdb.AddOtpToCache(email, otp)
 
 	// Sender's email address and password
 	from := "suryatejamulabagal@gmail.com"
 	password := "rejz mrjt ypkw lyfc"
 
+	//email := passwordRequest.Email
 	// Recipient's email address
-	to := "suryateja7285@gmail.com"
+	to := email
 
 	// SMTP server details
 	smtpServer := "smtp.gmail.com"
@@ -84,17 +84,32 @@ func (r NewService) CheckOtpResponse(ctx context.Context, otpVerification models
 
 	email := otpVerification.Email
 	otp := otpVerification.Otp
-	ok := r.rdb.CheckOtpRequest(email, otp)
-	if !ok {
-		log.Error().Msg("otp not matched")
-		return "otp verification failed", errors.New("")
+	otpData, err := r.rdb.CheckOtpRequest(email)
+	if err != nil {
+		log.Error().Msg("email details not found")
+		return "No such email exists in database", errors.New("")
 	}
 
+	if otp != otpData {
+		log.Error().Msg("Otp Not Matched")
+		return "Failed to verify otp", errors.New("")
+	}
+
+	if otpVerification.NewPassword != otpVerification.ConfirmPassword {
+		log.Error().Msg("Password not matched")
+		return "password not matched", errors.New("")
+
+	}
 	savePasswordToDatabase := r.rp.SavePassword(ctx, otpVerification)
 
 	if !savePasswordToDatabase {
-		log.Error().Msg("")
+		log.Error().Msg("Failed to store password in db")
 		return "Failed to change password", errors.New("")
+	}
+
+	err = r.rdb.DeleteCacheData(email)
+	if err != nil {
+		return "Password not matched", errors.New("")
 	}
 
 	return "password changed successfully", nil

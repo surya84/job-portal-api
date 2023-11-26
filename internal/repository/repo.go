@@ -29,7 +29,7 @@ type Repository interface {
 
 	GetJobProcessData(id int) (models.Job, error)
 
-	CheckUserData(ctx context.Context, email string) bool
+	CheckUserData(ctx context.Context, email string, dob string) bool
 
 	SavePassword(ctx context.Context, otp models.CheckOtp) bool
 

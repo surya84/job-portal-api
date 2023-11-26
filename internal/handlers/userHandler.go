@@ -143,7 +143,7 @@ func (h *handler) ForgetPassword(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, response)
 }
 
-func (h *handler) VerifyOtp(c *gin.Context) {
+func (h *handler) ChangePassword(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	traceId, ok := ctx.Value(middleware.TraceIdKey).(string)
@@ -176,11 +176,10 @@ func (h *handler) VerifyOtp(c *gin.Context) {
 
 	if err != nil {
 		log.Error().Err(err).Str("trace id", traceId).Msg("failed otp verification")
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"msg": http.StatusText(http.StatusBadRequest)})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"msg": response})
 
 		return
 	}
-
 	c.IndentedJSON(http.StatusOK, response)
 
 }

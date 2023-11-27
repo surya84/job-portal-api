@@ -30,7 +30,7 @@ func RedisClient() *redis.Client {
 type Cache interface {
 	SetRedisKey(key string, job models.Job)
 	CheckRedisKey(key string) (models.Job, error)
-	AddOtpToCache(email string, otp string)
+	AddOtpToCache(email string, otp string) bool
 	CheckOtpRequest(email string) (string, error)
 	DeleteCacheData(email string) error
 }
@@ -73,15 +73,16 @@ func (r *RdbConnection) CheckRedisKey(key string) (models.Job, error) {
 	return job, nil
 }
 
-func (r *RdbConnection) AddOtpToCache(email string, otp string) {
+func (r *RdbConnection) AddOtpToCache(email string, otp string) bool {
 	//otpNumber := strconv.Itoa(otp)
 	err := r.rdb.Set(email, otp, 10*time.Minute).Err()
 	if err != nil {
 		log.Err(err)
 		fmt.Println("Error storing OTP in Redis:", err)
-		return
+		return false
 	}
 	fmt.Println("OTP stored successfully in Redis for", email)
+	return true
 }
 
 func (r *RdbConnection) CheckOtpRequest(email string) (string, error) {
@@ -93,13 +94,6 @@ func (r *RdbConnection) CheckOtpRequest(email string) (string, error) {
 		return "", err
 	}
 	return val, nil
-
-	//return val, err
-	// if err == redis.Nil {
-
-	// 	return false
-	// }
-	// return otp == val
 }
 
 func (r *RdbConnection) DeleteCacheData(email string) error {

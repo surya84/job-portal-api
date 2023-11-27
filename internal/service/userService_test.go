@@ -162,3 +162,70 @@ func TestNewService_Authenticate(t *testing.T) {
 		})
 	}
 }
+
+func TestNewService_CheckEmail(t *testing.T) {
+	type args struct {
+		ctx             context.Context
+		passwordRequest models.UserRequest
+	}
+	tests := []struct {
+		name string
+		//r       *NewService
+		args         args
+		want         models.Response
+		wantErr      bool
+		mockResponse func(mockRepo *repository.MockRepository, mockCache *rediscache.MockCache)
+	}{
+		{
+			name: "error from db",
+			// args: args{
+			// 	ctx: context.Background(),
+			// 	passwordRequest: models.UserRequest{
+			// 		Email: "surya@gmail.com",
+			// 		Dob:   "13-06-2001",
+			// 	},
+			// },
+
+			want:    models.Response{Msg: "Email data not found"},
+			wantErr: true,
+			mockResponse: func(mockRepo *repository.MockRepository, mockCache *rediscache.MockCache) {
+				mockRepo.EXPECT().CheckUserData(gomock.Any(), gomock.Any()).Return(models.User{}, errors.New(""))
+			},
+		},
+		{
+			name: "dob fail case",
+			args: args{
+				ctx: context.Background(),
+				passwordRequest: models.UserRequest{
+					Email: "surya@gmail.com",
+					Dob:   "13-06-2001",
+				},
+			},
+			want:    models.Response{Msg: "Dob not macthed.. Enter valid dob"},
+			wantErr: true,
+			mockResponse: func(mockRepo *repository.MockRepository, mockCache *rediscache.MockCache) {
+
+				mockRepo.EXPECT().CheckUserData(gomock.Any(), gomock.Any()).Return()
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			ms := gomock.NewController(t)
+			mockRepo := repository.NewMockRepository(ms)
+			mockCache := rediscache.NewMockCache(ms)
+			tt.mockResponse(mockRepo, mockCache)
+			s := NewServiceStore(mockRepo, mockCache)
+
+			got, err := s.CheckEmail(tt.args.ctx, tt.args.passwordRequest)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewService.CheckEmail() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewService.CheckEmail() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

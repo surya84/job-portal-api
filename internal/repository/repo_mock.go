@@ -55,6 +55,21 @@ func (mr *MockRepositoryMockRecorder) AuthenticateUser(ctx, email, password any)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AuthenticateUser", reflect.TypeOf((*MockRepository)(nil).AuthenticateUser), ctx, email, password)
 }
 
+// CheckUserData mocks base method.
+func (m *MockRepository) CheckUserData(ctx context.Context, email string) (models.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CheckUserData", ctx, email)
+	ret0, _ := ret[0].(models.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CheckUserData indicates an expected call of CheckUserData.
+func (mr *MockRepositoryMockRecorder) CheckUserData(ctx, email any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckUserData", reflect.TypeOf((*MockRepository)(nil).CheckUserData), ctx, email)
+}
+
 // CreateC mocks base method.
 func (m *MockRepository) CreateC(ctx context.Context, nc models.NewCompany) (models.Company, error) {
 	m.ctrl.T.Helper()
@@ -143,6 +158,20 @@ func (m *MockRepository) GetJobProcessData(id int) (models.Job, error) {
 func (mr *MockRepositoryMockRecorder) GetJobProcessData(id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetJobProcessData", reflect.TypeOf((*MockRepository)(nil).GetJobProcessData), id)
+}
+
+// SavePassword mocks base method.
+func (m *MockRepository) SavePassword(ctx context.Context, otp models.CheckOtp) bool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SavePassword", ctx, otp)
+	ret0, _ := ret[0].(bool)
+	return ret0
+}
+
+// SavePassword indicates an expected call of SavePassword.
+func (mr *MockRepositoryMockRecorder) SavePassword(ctx, otp any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SavePassword", reflect.TypeOf((*MockRepository)(nil).SavePassword), ctx, otp)
 }
 
 // ViewCompanies mocks base method.

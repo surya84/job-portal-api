@@ -219,3 +219,60 @@ func Test_handler_UserLogin(t *testing.T) {
 		})
 	}
 }
+
+func Test_handler_ForgetPassword(t *testing.T) {
+	type args struct {
+		c *gin.Context
+	}
+	tests := []struct {
+		name string
+		//h    *handler
+		args               args
+		setup              func() (*gin.Context, *httptest.ResponseRecorder, service.Service)
+		expectedStatusCode int
+		expectedResponse   string
+	}{
+		{
+			name: "trace id error",
+			setup: func() (*gin.Context, *httptest.ResponseRecorder, service.Service) {
+				rr := httptest.NewRecorder()
+				c, _ := gin.CreateTestContext(rr)
+				httpReq, _ := http.NewRequest(http.MethodGet, "http://google.com", nil)
+				c.Request = httpReq
+				return c, rr, nil
+
+			},
+			expectedStatusCode: http.StatusInternalServerError,
+			expectedResponse:   `{"error":"Internal Server Error"}`,
+		},
+		{
+			name: "error in decoding",
+			setup: func() (*gin.Context, *httptest.ResponseRecorder, service.Service) {
+				rr := httptest.NewRecorder()
+				c, _ := gin.CreateTestContext(rr)
+				httpReq, _ := http.NewRequest(http.MethodPost, "http://google.com", bytes.NewBufferString(`{ckdvndkvsd},,,,`))
+				ctx := httpReq.Context()
+				ctx = context.WithValue(ctx, middleware.TraceIdKey, "1")
+				httpReq = httpReq.WithContext(ctx)
+				c.Request = httpReq
+
+				return c, rr, nil
+
+			},
+			expectedStatusCode: http.StatusBadRequest,
+			expectedResponse:   `{"error":"Bad Request"}`,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gin.SetMode(gin.TestMode)
+			c, rr, ms := tt.setup()
+			h := &handler{
+				s: ms,
+			}
+			h.ForgetPassword(c)
+			assert.Equal(t, tt.expectedStatusCode, rr.Code)
+			assert.Equal(t, tt.expectedResponse, rr.Body.String())
+		})
+	}
+}

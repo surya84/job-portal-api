@@ -37,7 +37,7 @@ type Keys struct {
 	PublicKey  string `env:"PUBLIC_KEY,required=true"`
 }
 
-func init() {
+func Init() {
 	_, err := env.UnmarshalFromEnviron(&cfg)
 	if err != nil {
 		log.Panic(err)

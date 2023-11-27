@@ -56,10 +56,10 @@ func (mr *MockServiceMockRecorder) Authenticate(ctx, email, password any) *gomoc
 }
 
 // CheckEmail mocks base method.
-func (m *MockService) CheckEmail(ctx context.Context, passwordRequest models.UserRequest) (string, error) {
+func (m *MockService) CheckEmail(ctx context.Context, passwordRequest models.UserRequest) (models.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CheckEmail", ctx, passwordRequest)
-	ret0, _ := ret[0].(string)
+	ret0, _ := ret[0].(models.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -68,6 +68,21 @@ func (m *MockService) CheckEmail(ctx context.Context, passwordRequest models.Use
 func (mr *MockServiceMockRecorder) CheckEmail(ctx, passwordRequest any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckEmail", reflect.TypeOf((*MockService)(nil).CheckEmail), ctx, passwordRequest)
+}
+
+// CheckOtpResponse mocks base method.
+func (m *MockService) CheckOtpResponse(ctx context.Context, otpVerification models.CheckOtp) (models.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CheckOtpResponse", ctx, otpVerification)
+	ret0, _ := ret[0].(models.Response)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CheckOtpResponse indicates an expected call of CheckOtpResponse.
+func (mr *MockServiceMockRecorder) CheckOtpResponse(ctx, otpVerification any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckOtpResponse", reflect.TypeOf((*MockService)(nil).CheckOtpResponse), ctx, otpVerification)
 }
 
 // CreateCompany mocks base method.

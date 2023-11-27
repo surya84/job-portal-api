@@ -21,7 +21,7 @@ services:
     container_name: postgres
     image: postgres
     ports:
-     - "5432:5432"
+     - "5433:5432"
     env_file:
       - .appdb.env
   

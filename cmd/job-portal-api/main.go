@@ -28,7 +28,7 @@ func main() {
 
 }
 func startApp() error {
-
+	config.Init()
 	cfg := config.GetConfig()
 
 	// =========================================================================

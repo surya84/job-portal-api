@@ -29,15 +29,25 @@ func (r NewService) Authenticate(ctx context.Context, email string, password str
 	return userData, err
 }
 
-func (r *NewService) CheckEmail(ctx context.Context, passwordRequest models.UserRequest) (string, error) {
+func (r *NewService) CheckEmail(ctx context.Context, passwordRequest models.UserRequest) (models.Response, error) {
 
 	email := passwordRequest.Email
 	dob := passwordRequest.Dob
 	//dob := passwordRequest.Dob
-	err := r.rp.CheckUserData(ctx, email, dob)
+	userData, err := r.rp.CheckUserData(ctx, email)
+	if err != nil {
+		log.Error().Err(err).Msg("error from user db")
+		return models.Response{Msg: "Email data not found"}, errors.New("")
+	}
 
-	if !err {
-		return "Email not found", errors.New("")
+	if userData.Dob != dob {
+		log.Info().Msg("dod not matched")
+		return models.Response{Msg: "Dob not macthed.. Enter valid dob"}, errors.New("")
+	}
+
+	if userData.Email != email {
+		log.Info().Msg("email not matched")
+		return models.Response{Msg: "Email is not matched.. Enter valid email address"}, errors.New("")
 	}
 
 	// fmt.Println("email", email)
@@ -46,7 +56,11 @@ func (r *NewService) CheckEmail(ctx context.Context, passwordRequest models.User
 	randomNumber := rand.Intn(90000) + 10000
 	otp := strconv.Itoa(randomNumber)
 
-	r.rdb.AddOtpToCache(email, otp)
+	response := r.rdb.AddOtpToCache(email, otp)
+
+	if !response {
+		return models.Response{Msg: "failed to add cache"}, errors.New("")
+	}
 
 	// Sender's email address and password
 	from := "suryatejamulabagal@gmail.com"
@@ -71,47 +85,49 @@ func (r *NewService) CheckEmail(ctx context.Context, passwordRequest models.User
 	ok := smtp.SendMail(smtpAddr, auth, from, []string{to}, message)
 	if ok != nil {
 		fmt.Println("Error sending email:", err)
-		return "otp not sent", errors.New("")
+		return models.Response{Msg: "otp not send"}, errors.New("")
 	}
 
-	fmt.Println("email sent successfully!")
+	//fmt.Println("email sent successfully!")
 
-	return "otp sent succesfully", nil
+	return models.Response{Msg: "Otp has sent to your email " + email + " successfully"}, nil
 
 }
 
-func (r NewService) CheckOtpResponse(ctx context.Context, otpVerification models.CheckOtp) (string, error) {
+func (r NewService) CheckOtpResponse(ctx context.Context, otpVerification models.CheckOtp) (models.Response, error) {
 
 	email := otpVerification.Email
 	otp := otpVerification.Otp
+
 	otpData, err := r.rdb.CheckOtpRequest(email)
 	if err != nil {
-		log.Error().Msg("email details not found")
-		return "No such email exists in database", errors.New("")
+		log.Error().Err(err).Msg("email details not found")
+		return models.Response{Msg: "Enter valid email id"}, err
 	}
 
 	if otp != otpData {
-		log.Error().Msg("Otp Not Matched")
-		return "Failed to verify otp", errors.New("")
+
+		return models.Response{Msg: "Otp not Matched .. Please enter valid otp"}, errors.New("")
 	}
 
 	if otpVerification.NewPassword != otpVerification.ConfirmPassword {
 		log.Error().Msg("Password not matched")
-		return "password not matched", errors.New("")
+		return models.Response{Msg: "New Password and Confirm Password not matched"}, errors.New("")
 
 	}
 	savePasswordToDatabase := r.rp.SavePassword(ctx, otpVerification)
 
 	if !savePasswordToDatabase {
 		log.Error().Msg("Failed to store password in db")
-		return "Failed to change password", errors.New("")
+		return models.Response{Msg: "Failed to store password in database"}, errors.New("")
 	}
 
 	err = r.rdb.DeleteCacheData(email)
 	if err != nil {
-		return "Password not matched", errors.New("")
+		log.Error().Msg("otp not found in cache")
+		return models.Response{Msg: ""}, errors.New("")
 	}
 
-	return "password changed successfully", nil
+	return models.Response{Msg: "You have changed your account password linked to  " + email + "  successfully"}, nil
 
 }

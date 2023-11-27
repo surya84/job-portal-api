@@ -28,9 +28,9 @@ type Service interface {
 
 	ProcessJob(ctx context.Context, nj []models.ApplicationRequest) ([]models.ApplicationRequest, error)
 
-	CheckEmail(ctx context.Context, passwordRequest models.UserRequest) (string, error)
+	CheckEmail(ctx context.Context, passwordRequest models.UserRequest) (models.Response, error)
 
-	CheckOtpResponse(ctx context.Context, otpVerification models.CheckOtp) (string, error)
+	CheckOtpResponse(ctx context.Context, otpVerification models.CheckOtp) (models.Response, error)
 }
 
 func NewServiceStore(s repository.Repository, r rediscache.Cache) Service {

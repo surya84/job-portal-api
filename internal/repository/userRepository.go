@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"job-portal/internal/models"
 	"strconv"
@@ -59,14 +60,14 @@ func (s *Conn) AuthenticateUser(ctx context.Context, email, password string) (jw
 	return c, nil
 }
 
-func (s *Conn) CheckUserData(ctx context.Context, email string, dob string) bool {
+func (s *Conn) CheckUserData(ctx context.Context, email string) (models.User, error) {
 	var data models.User
 	// tx := s.db.Debug().Where("email = ? AND dob = ?", email, dob).Find(&data)
-	tx := s.db.Where("email = ?", email).Where("dob = ?", dob).First(&data)
+	tx := s.db.Where("email = ?", email).First(&data)
 	if tx.Error != nil || tx.RowsAffected == 0 {
-		return false
+		return models.User{}, errors.New("")
 	}
-	return true
+	return data, nil
 }
 
 func (s *Conn) SavePassword(ctx context.Context, otp models.CheckOtp) bool {

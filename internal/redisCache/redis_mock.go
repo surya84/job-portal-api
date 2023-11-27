@@ -38,6 +38,35 @@ func (m *MockCache) EXPECT() *MockCacheMockRecorder {
 	return m.recorder
 }
 
+// AddOtpToCache mocks base method.
+func (m *MockCache) AddOtpToCache(email, otp string) bool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AddOtpToCache", email, otp)
+	ret0, _ := ret[0].(bool)
+	return ret0
+}
+
+// AddOtpToCache indicates an expected call of AddOtpToCache.
+func (mr *MockCacheMockRecorder) AddOtpToCache(email, otp any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddOtpToCache", reflect.TypeOf((*MockCache)(nil).AddOtpToCache), email, otp)
+}
+
+// CheckOtpRequest mocks base method.
+func (m *MockCache) CheckOtpRequest(email string) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CheckOtpRequest", email)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CheckOtpRequest indicates an expected call of CheckOtpRequest.
+func (mr *MockCacheMockRecorder) CheckOtpRequest(email any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckOtpRequest", reflect.TypeOf((*MockCache)(nil).CheckOtpRequest), email)
+}
+
 // CheckRedisKey mocks base method.
 func (m *MockCache) CheckRedisKey(key string) (models.Job, error) {
 	m.ctrl.T.Helper()
@@ -51,6 +80,20 @@ func (m *MockCache) CheckRedisKey(key string) (models.Job, error) {
 func (mr *MockCacheMockRecorder) CheckRedisKey(key any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckRedisKey", reflect.TypeOf((*MockCache)(nil).CheckRedisKey), key)
+}
+
+// DeleteCacheData mocks base method.
+func (m *MockCache) DeleteCacheData(email string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteCacheData", email)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteCacheData indicates an expected call of DeleteCacheData.
+func (mr *MockCacheMockRecorder) DeleteCacheData(email any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteCacheData", reflect.TypeOf((*MockCache)(nil).DeleteCacheData), email)
 }
 
 // SetRedisKey mocks base method.

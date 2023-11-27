@@ -135,7 +135,7 @@ func (h *handler) ForgetPassword(c *gin.Context) {
 	response, err := h.s.CheckEmail(ctx, passwordResponse)
 	if err != nil {
 		log.Error().Err(err).Str("Trace Id", traceId).Msg("Email not Found")
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"msg": http.StatusText(http.StatusBadRequest)})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 
 		return
 	}
@@ -176,7 +176,7 @@ func (h *handler) ChangePassword(c *gin.Context) {
 
 	if err != nil {
 		log.Error().Err(err).Str("trace id", traceId).Msg("failed otp verification")
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"msg": response})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 
 		return
 	}
